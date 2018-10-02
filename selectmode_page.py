@@ -11,8 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1291, 683)
-        MainWindow.setMaximumSize(QtCore.QSize(1291, 683))
+        MainWindow.setFixedSize(1298, 669)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.userinfo_label = QtWidgets.QLabel(self.centralwidget)
