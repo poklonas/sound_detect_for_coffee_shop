@@ -148,6 +148,12 @@ class MyApp(QMainWindow):
         self.set_enabled_salemode_button()
         self.popup.close()
 
+    def manual_add_popup(self):
+        self.manual_mpop.setupUi(self.popup)
+        self.set_disable_salemode_button()
+        self.manual_mpop.cancle_button.clicked.connect(self.close_popup)
+        self.popup.show()
+
     def set_disable_salemode_button(self):
         self.sale_p.hotmenu_button.setEnabled(False)
         self.sale_p.icemenu_button.setEnabled(False)
@@ -184,6 +190,17 @@ class MyApp(QMainWindow):
         self.sale_p.frapemenu_button.clicked.connect(self.set_frappe_drink)
         self.sale_p.etcmenu_button.clicked.connect(self.set_etc_menu)
         self.sale_p.sound_detect_button.clicked.connect(self.sound_detect_menu)
+        #######################################################
+        items = self.sale_p.scrollAreaWidgetContents.children()
+        count = 0
+        for i in items:
+            if isinstance(i, QtWidgets.QPushButton):
+                i.clicked.connect(self.manual_add_popup)
+
+
+
+
+        
         
 class MyPopup(QMainWindow):
     def __init__(self, parent=None):
