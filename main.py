@@ -133,6 +133,7 @@ class MyApp(QMainWindow):
         self.sound_detect_pop.cancle_button.clicked.connect(self.close_popup)
         self.sound_detect_pop.start_stop_button.clicked.connect(self.start_detect_sound)
         self.state = 0
+        self.set_disable_salemode_button()
         self.popup.show()
 
     def start_detect_sound(self):
@@ -144,7 +145,37 @@ class MyApp(QMainWindow):
             self.state = 0
 
     def close_popup(self):
+        self.set_enabled_salemode_button()
         self.popup.close()
+
+    def set_disable_salemode_button(self):
+        self.sale_p.hotmenu_button.setEnabled(False)
+        self.sale_p.icemenu_button.setEnabled(False)
+        self.sale_p.frapemenu_button.setEnabled(False)
+        self.sale_p.etcmenu_button.setEnabled(False)
+        self.sale_p.sound_detect_button.setEnabled(False)
+        self.sale_p.bill_button.setEnabled(False)
+        self.sale_p.back_button.setEnabled(False)
+        items = self.sale_p.scrollAreaWidgetContents.children()
+        count = 0
+        for i in items:
+            if isinstance(i, QtWidgets.QPushButton):
+                i.setEnabled(False)
+
+    def set_enabled_salemode_button(self):
+        self.sale_p.hotmenu_button.setEnabled(True)
+        self.sale_p.icemenu_button.setEnabled(True)
+        self.sale_p.frapemenu_button.setEnabled(True)
+        self.sale_p.etcmenu_button.setEnabled(True)
+        self.sale_p.sound_detect_button.setEnabled(True)
+        self.sale_p.bill_button.setEnabled(True)
+        self.sale_p.back_button.setEnabled(True)
+        items = self.sale_p.scrollAreaWidgetContents.children()
+        count = 0
+        for i in items:
+            if isinstance(i, QtWidgets.QPushButton):
+                i.setEnabled(True)
+
 
     def set_sale_page_action(self):
         self.sale_p.back_button.clicked.connect(self.open_select_page)
