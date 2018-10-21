@@ -19,6 +19,7 @@ class MyApp(QMainWindow):
         self.manual_mpop = manual_pop()
         self.sound_detect_pop = sound_detect_pop()
         self.warning_pop = warn_pop()
+        self.popup = MyPopup()
         self.open_login_page()
         self.hotmenu_len = 9
         self.icemenu_len = 17
@@ -127,14 +128,35 @@ class MyApp(QMainWindow):
                 i.setStyleSheet("background-image:url('./image/etc/"+str(count)+".GIF')")
                 count += 1
 
+    def sound_detect_menu(self):
+        self.sound_detect_pop.setupUi(self.popup)
+        self.sound_detect_pop.cancle_button.clicked.connect(self.close_popup)
+        self.sound_detect_pop.start_stop_button.clicked.connect(self.start_detect_sound)
+        self.state = 0
+        self.popup.show()
+
+    def start_detect_sound(self):
+        if(self.state == 0):
+            self.state = 1
+            self.sound_detect_pop.picture_view.setStyleSheet("background-image:url('./image/general/start_sound_record.gif')")
+        else:
+            self.sound_detect_pop.picture_view.setStyleSheet("background-image:url('./image/general/stop_sound_record.gif')")
+            self.state = 0
+
+    def close_popup(self):
+        self.popup.close()
+
     def set_sale_page_action(self):
         self.sale_p.back_button.clicked.connect(self.open_select_page)
         self.sale_p.icemenu_button.clicked.connect(self.set_ice_drink)
         self.sale_p.hotmenu_button.clicked.connect(self.set_hot_drink)
         self.sale_p.frapemenu_button.clicked.connect(self.set_frappe_drink)
         self.sale_p.etcmenu_button.clicked.connect(self.set_etc_menu)
+        self.sale_p.sound_detect_button.clicked.connect(self.sound_detect_menu)
         
-
+class MyPopup(QMainWindow):
+    def __init__(self, parent=None):
+        super(MyPopup, self).__init__(parent)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
