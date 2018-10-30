@@ -1,4 +1,6 @@
 import sys
+from PyQt5.QtGui import QStandardItem
+from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow
 from PyQt5 import QtGui , QtCore, QtWidgets
 from login_page import Ui_MainWindow as login_p
@@ -8,6 +10,7 @@ from feedback_popup import Ui_Form as feedback_pop
 from manual_menu_popup import Ui_Form as manual_pop 
 from sound_detect_popup import Ui_Form as sound_detect_pop 
 from warning_popup import Ui_Form as warn_pop 
+from functools import partial
 
 class MyApp(QMainWindow):
     def __init__(self, parent=None):
@@ -25,6 +28,10 @@ class MyApp(QMainWindow):
         self.icemenu_len = 17
         self.frapmenu_len = 12
         self.etcmenu_len = 8
+        self.order_list = []
+        ### temp menu
+        self.menu = ["เอสเพรสโซ","คาปูชิโน","ลาเต้","มอคค่า","ชา","ชาเขียวนม","ชานม","ดาร์คช็อกโกแลต","นมสด","ช็อกโกแลต"]
+        self.price = [40,40,35,30,25,25,30,45,40,45]
 
     def set_login_page_action(self):
         self.login_p.login_button.clicked.connect(self.login)
@@ -85,7 +92,6 @@ class MyApp(QMainWindow):
         self.sale_p.gridLayout.update()
 
     # ----- 232*161 for picture button
-
     def set_hot_drink(self):
         self.remove_button()
         self.add_button(self.hotmenu_len)
@@ -94,9 +100,8 @@ class MyApp(QMainWindow):
         for i in items:
             if isinstance(i, QtWidgets.QPushButton):
                 i.setStyleSheet("background-image:url('./image/hot/"+str(count)+".GIF')")
-                count += 1
-                #i.setIcon(QtGui.QIcon('./image/coffeeA.GIF'))
-                #i.setIconSize(QtCore.QSize(200,210))
+                i.clicked.connect(partial( self.manual_add_popup,self.menu[count], self.price[count]))
+                count += 1         
 
     def set_ice_drink(self):
         self.remove_button()
@@ -106,6 +111,7 @@ class MyApp(QMainWindow):
         for i in items:
             if isinstance(i, QtWidgets.QPushButton):
                 i.setStyleSheet("background-image:url('./image/ice/"+str(count)+".GIF')")
+                i.clicked.connect(lambda: self.manual_add_popup(self.menu[count], self.price[count]))
                 count += 1
 
     def set_frappe_drink(self):
@@ -116,6 +122,7 @@ class MyApp(QMainWindow):
         for i in items:
             if isinstance(i, QtWidgets.QPushButton):
                 i.setStyleSheet("background-image:url('./image/frappe/"+str(count)+".GIF')")
+                i.clicked.connect(lambda: self.manual_add_popup(self.menu[count], self.price[count]))
                 count += 1
 
     def set_etc_menu(self):
@@ -126,9 +133,11 @@ class MyApp(QMainWindow):
         for i in items:
             if isinstance(i, QtWidgets.QPushButton):
                 i.setStyleSheet("background-image:url('./image/etc/"+str(count)+".GIF')")
+                i.clicked.connect(lambda: self.manual_add_popup(self.menu[count], self.price[count]))
                 count += 1
 
     def sound_detect_menu(self):
+        self.popup = MyPopup()
         self.sound_detect_pop.setupUi(self.popup)
         self.sound_detect_pop.cancle_button.clicked.connect(self.close_popup)
         self.sound_detect_pop.start_stop_button.clicked.connect(self.start_detect_sound)
@@ -148,10 +157,13 @@ class MyApp(QMainWindow):
         self.set_enabled_salemode_button()
         self.popup.close()
 
-    def manual_add_popup(self):
+    def manual_add_popup(self, name, price):
+        self.popup = MyPopup()
         self.manual_mpop.setupUi(self.popup)
         self.set_disable_salemode_button()
+        self.manual_mpop.manuname_label.setText(name)
         self.manual_mpop.cancle_button.clicked.connect(self.close_popup)
+        self.manual_mpop.add_button.clicked.connect(lambda: self.add_order(name,price))
         self.popup.show()
 
     def set_disable_salemode_button(self):
@@ -190,18 +202,32 @@ class MyApp(QMainWindow):
         self.sale_p.frapemenu_button.clicked.connect(self.set_frappe_drink)
         self.sale_p.etcmenu_button.clicked.connect(self.set_etc_menu)
         self.sale_p.sound_detect_button.clicked.connect(self.sound_detect_menu)
-        #######################################################
-        items = self.sale_p.scrollAreaWidgetContents.children()
-        count = 0
-        for i in items:
-            if isinstance(i, QtWidgets.QPushButton):
-                i.clicked.connect(self.manual_add_popup)
 
+    #def set_button_salemanual(self):
+    #    items = self.sale_p.scrollAreaWidgetContents.children()
+    #    count = 0
+    #    for i in items:
+    #        if isinstance(i, QtWidgets.QPushButton):
+    #            i.clicked.connect(lambda: self.manual_add_popup(self.menu[count], self.price[count]))
+    #            count = count + 1
 
-
-
+    def add_order(self, name, price):
+        order = Order(name, price)
+        self.order_list.append(order)
+        sum_price = 0
+        order_model = QStandardItemModel()
+        for i in self.order_list:
+            sum_price += i.price
+            order_model.appendRow(QStandardItem(i.name+"       :      "+str(i.price)))
+        self.sale_p.listView.setModel(order_model)
+        self.sale_p.price_lcd_number.setProperty("intValue", sum_price)
+        self.close_popup()
         
-        
+class Order():
+    def __init__(self, name, price):
+        self.name = name
+        self.price = price
+
 class MyPopup(QMainWindow):
     def __init__(self, parent=None):
         super(MyPopup, self).__init__(parent)
