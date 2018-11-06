@@ -12,6 +12,9 @@ from sound_detect_popup import Ui_Form as sound_detect_pop
 from warning_popup import Ui_Form as warn_pop 
 from functools import partial
 
+import threading
+from pjvoice import Recogning as rc
+
 class MyApp(QMainWindow):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
@@ -32,6 +35,8 @@ class MyApp(QMainWindow):
         ### temp menu
         self.menu = ["เอสเพรสโซ","คาปูชิโน","ลาเต้","มอคค่า","ชา","ชาเขียวนม","ชานม","ดาร์คช็อกโกแลต","นมสด","ช็อกโกแลต"]
         self.price = [40,40,35,30,25,25,30,45,40,45]
+        ## cound rc
+        self.rc = rc()
 
     def set_login_page_action(self):
         self.login_p.login_button.clicked.connect(self.login)
@@ -146,15 +151,35 @@ class MyApp(QMainWindow):
         self.popup.show()
 
     def start_detect_sound(self):
+        t = threading.Thread(target=self.detect)
+        t.start()
+
+    def detect(self):
         if(self.state == 0):
             self.state = 1
             self.sound_detect_pop.picture_view.setStyleSheet("background-image:url('./image/general/start_sound_record.gif')")
+            self.rc.on = True
+            new_list = self.rc.listen()
+            for item in new_list:
+                order = Order(item, 5)
+                self.order_list.append(order)
+            sum_price = 0
+            order_model = QStandardItemModel()
+            for i in self.order_list:
+                sum_price += i.price
+                order_model.appendRow(QStandardItem(i.name+"       :      "+str(i.price)))
+            self.sale_p.listView.setModel(order_model)
+            self.sale_p.price_lcd_number.setProperty("intValue", sum_price)
+            self.close_popup()
         else:
             self.sound_detect_pop.picture_view.setStyleSheet("background-image:url('./image/general/stop_sound_record.gif')")
             self.state = 0
-
+            self.rc.on = False
+           
+            
     def close_popup(self):
         self.set_enabled_salemode_button()
+        self.rc.on = False
         self.popup.close()
 
     def manual_add_popup(self, name, price):
@@ -222,6 +247,7 @@ class MyApp(QMainWindow):
         self.sale_p.listView.setModel(order_model)
         self.sale_p.price_lcd_number.setProperty("intValue", sum_price)
         self.close_popup()
+
         
 class Order():
     def __init__(self, name, price):

@@ -6,26 +6,27 @@ from pythainlp.tokenize import word_tokenize
 
 class Recogning:
     def __init__(self):
+        self.r = sr.Recognizer()
         self.on = False
+        self.list = []
 
-    def reconizing(audio):
+    def reconizing(self,audio):
         try:
-            text = r.recognize_google(audio,language = "th-TH")
+            text = self.r.recognize_google(audio,language = "th-TH")
             print(text)
-            return text
-            #item = nlp.text_to_item(text)
-            #print(item)
+            self.list.append(text)
         except:
             pass
 
-    def listen():
-        with sr.Microphone() as source: r.adjust_for_ambient_noise(source)
+    def listen(self):
+        with sr.Microphone() as source: self.r.adjust_for_ambient_noise(source)
         while self.on:
             with sr.Microphone() as source:
                 print("listening")
-                audio = r.listen(source)
-            t = threading.Thread(target=reconizing, args=(audio,))
+                audio = self.r.listen(source)
+            t = threading.Thread(target=self.reconizing, args=(audio,))
             t.start()
+        return self.list
 
 if __name__ == '__main__':
     nlp  = CoffeeShopNLP()
