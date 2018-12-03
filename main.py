@@ -12,8 +12,9 @@ from sound_detect_popup import Ui_Form as sound_detect_pop
 from warning_popup import Ui_Form as warn_pop 
 from functools import partial
 
-import threading
+#import threading
 from pjvoice import Recogning as rc
+from thread import * 
 
 class MyApp(QMainWindow):
     def __init__(self, parent=None):
@@ -37,6 +38,9 @@ class MyApp(QMainWindow):
         self.price = [40,40,35,30,25,25,30,45,40,45]
         ## cound rc
         self.rc = rc()
+        #thered
+        self.threadpool = QThreadPool()
+
 
     def set_login_page_action(self):
         self.login_p.login_button.clicked.connect(self.login)
@@ -151,9 +155,11 @@ class MyApp(QMainWindow):
         self.popup.show()
 
     def start_detect_sound(self):
-        t = threading.Thread(target=self.detect)
-        t.start()
-
+        #t = threading.Thread(target=self.detect)
+        #t.start()
+        thread = Thread(self.detect)
+        self.threadpool.start(thread)
+        
     def detect(self):
         if(self.state == 0):
             self.state = 1
@@ -257,6 +263,7 @@ class Order():
 class MyPopup(QMainWindow):
     def __init__(self, parent=None):
         super(MyPopup, self).__init__(parent)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
