@@ -14,6 +14,7 @@ class Recogning:
         self.list = []
         self.threadpool = QThreadPool()
         self.order_list = None
+        self.order_model = QStandardItemModel()
 
     def reconizing(self,audio):
         #print("create thread reconizing")
@@ -39,9 +40,7 @@ class Recogning:
 
     def addList2Target(self, text):
         self.list.append(text)
-        self.order_model = QStandardItemModel()
-        for i in self.list:
-            self.order_model.appendRow(QStandardItem(i))
+        self.order_model.appendRow(QStandardItem(text))
         self.order_list.setModel(self.order_model)
 
 if __name__ == '__main__':
