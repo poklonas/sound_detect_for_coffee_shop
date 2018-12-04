@@ -34,6 +34,7 @@ class MyApp(QMainWindow):
         self.etcmenu_len = 8
         self.order_list = []
         self.order_model = QStandardItemModel()
+        self.order_model_popup = QStandardItemModel()
         ### temp menu
         self.menu = ["เอสเพรสโซ","คาปูชิโน","ลาเต้","มอคค่า","ชา","ชาเขียวนม","ชานม","ดาร์คช็อกโกแลต","นมสด","ช็อกโกแลต"]
         self.price = [40,40,35,30,25,25,30,45,40,45]
@@ -160,7 +161,9 @@ class MyApp(QMainWindow):
         #t.start()
         if(self.state == 0):
             if(self.threadpool.activeThreadCount() == 0):
+                self.order_model_popup = QStandardItemModel()
                 thread = Thread(self.detect)
+                thread.signals.result.connect(self.update_list_order)
                 self.threadpool.start(thread)
         else:
             self.detect()
@@ -169,27 +172,28 @@ class MyApp(QMainWindow):
         if(self.state == 0):
             self.state = 1
             self.sound_detect_pop.start_stop_button.setText("Stop")
-            #self.sound_detect_pop.picture_view.setStyleSheet("background-image:url('./image/general/start_sound_record.gif')")
             self.rc.on = True
-            new_list = self.rc.listen(self.sound_detect_pop.listOrder)
-            self.update_list_order(new_list)
-            self.close_popup()
+            return self.rc.listen(self.update_list_order_popup)
         else:
             self.sound_detect_pop.start_stop_button.setText("Start")
-            #self.sound_detect_pop.picture_view.setStyleSheet("background-image:url('./image/general/stop_sound_record.gif')")
             self.state = 0
             self.rc.on = False
            
     def update_list_order(self, new_list):
-            for item in new_list:
-                order = Order(item, 5)
-                self.order_list.append(order)
-            sum_price = 0
-            for i in self.order_list:
-                sum_price += i.price
-                self.order_model.appendRow(QStandardItem(i.name+"       :      "+str(i.price)))
-            self.sale_p.listView.setModel(self.order_model)
-            self.sale_p.price_lcd_number.setProperty("intValue", sum_price)
+        for item in new_list:
+            order = Order(item, 5)
+            self.order_list.append(order)
+        sum_price = 0
+        for i in self.order_list:
+            sum_price += i.price
+            self.order_model.appendRow(QStandardItem(i.name+"       :      "+str(i.price)))
+        self.sale_p.listView.setModel(self.order_model)
+        self.sale_p.price_lcd_number.setProperty("intValue", sum_price)
+        self.close_popup()
+
+    def update_list_order_popup(self, new_item):
+        self.order_model_popup.appendRow(QStandardItem(new_item))
+        self.sound_detect_pop.listOrder.setModel(self.order_model_popup)
             
     def close_popup(self):
         self.set_enabled_salemode_button()

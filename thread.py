@@ -24,4 +24,8 @@ class Thread(QRunnable):
         else:
             self.signals.result.emit(result)
         finally:
-            self.signals.finished.emit()  # Done
+            self.signals.finished.emit()  
+
+    def currentThreadId(self):
+        return self.currentThreadId
+        
