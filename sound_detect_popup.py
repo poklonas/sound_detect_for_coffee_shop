@@ -12,9 +12,6 @@ class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(410, 360)
-        self.picture_view = QtWidgets.QGraphicsView(Form)
-        self.picture_view.setGeometry(QtCore.QRect(40, 20, 321, 231))
-        self.picture_view.setObjectName("picture_view")
         self.start_stop_button = QtWidgets.QPushButton(Form)
         self.start_stop_button.setGeometry(QtCore.QRect(40, 270, 151, 71))
         font = QtGui.QFont()
@@ -27,6 +24,9 @@ class Ui_Form(object):
         font.setPointSize(24)
         self.cancle_button.setFont(font)
         self.cancle_button.setObjectName("cancle_button")
+        self.listOrder = QtWidgets.QListView(Form)
+        self.listOrder.setGeometry(QtCore.QRect(40, 20, 321, 231))
+        self.listOrder.setObjectName("listOrder")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -34,6 +34,6 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
-        self.start_stop_button.setText(_translate("Form", "Start/Stop"))
+        self.start_stop_button.setText(_translate("Form", "Start"))
         self.cancle_button.setText(_translate("Form", "Cancle"))
 

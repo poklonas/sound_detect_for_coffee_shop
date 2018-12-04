@@ -157,15 +157,29 @@ class MyApp(QMainWindow):
     def start_detect_sound(self):
         #t = threading.Thread(target=self.detect)
         #t.start()
-        thread = Thread(self.detect)
-        self.threadpool.start(thread)
+        if(self.state == 0):
+           #if(self.threadpool.activeThreadCount() == 0):
+            thread = Thread(self.detect)
+            self.threadpool.start(thread)
+        else:
+            self.detect()
         
     def detect(self):
         if(self.state == 0):
             self.state = 1
-            self.sound_detect_pop.picture_view.setStyleSheet("background-image:url('./image/general/start_sound_record.gif')")
+            self.sound_detect_pop.start_stop_button.setText("Stop")
+            #self.sound_detect_pop.picture_view.setStyleSheet("background-image:url('./image/general/start_sound_record.gif')")
             self.rc.on = True
-            new_list = self.rc.listen()
+            new_list = self.rc.listen(self.sound_detect_pop.listOrder)
+            self.update_list_order(new_list)
+            self.close_popup()
+        else:
+            self.sound_detect_pop.start_stop_button.setText("Start")
+            #self.sound_detect_pop.picture_view.setStyleSheet("background-image:url('./image/general/stop_sound_record.gif')")
+            self.state = 0
+            self.rc.on = False
+           
+    def update_list_order(self, new_list):
             for item in new_list:
                 order = Order(item, 5)
                 self.order_list.append(order)
@@ -176,12 +190,6 @@ class MyApp(QMainWindow):
                 order_model.appendRow(QStandardItem(i.name+"       :      "+str(i.price)))
             self.sale_p.listView.setModel(order_model)
             self.sale_p.price_lcd_number.setProperty("intValue", sum_price)
-            self.close_popup()
-        else:
-            self.sound_detect_pop.picture_view.setStyleSheet("background-image:url('./image/general/stop_sound_record.gif')")
-            self.state = 0
-            self.rc.on = False
-           
             
     def close_popup(self):
         self.set_enabled_salemode_button()

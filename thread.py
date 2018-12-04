@@ -21,5 +21,7 @@ class Thread(QRunnable):
             result = self.fn(*self.args, **self.kwargs)
         except:
             pass
+        else:
+            self.signals.result.emit(result)
         finally:
             self.signals.finished.emit()  # Done
