@@ -33,6 +33,7 @@ class MyApp(QMainWindow):
         self.frapmenu_len = 12
         self.etcmenu_len = 8
         self.order_list = []
+        self.order_model = QStandardItemModel()
         ### temp menu
         self.menu = ["เอสเพรสโซ","คาปูชิโน","ลาเต้","มอคค่า","ชา","ชาเขียวนม","ชานม","ดาร์คช็อกโกแลต","นมสด","ช็อกโกแลต"]
         self.price = [40,40,35,30,25,25,30,45,40,45]
@@ -158,9 +159,9 @@ class MyApp(QMainWindow):
         #t = threading.Thread(target=self.detect)
         #t.start()
         if(self.state == 0):
-           #if(self.threadpool.activeThreadCount() == 0):
-            thread = Thread(self.detect)
-            self.threadpool.start(thread)
+            if(self.threadpool.activeThreadCount() == 0):
+                thread = Thread(self.detect)
+                self.threadpool.start(thread)
         else:
             self.detect()
         
@@ -184,11 +185,10 @@ class MyApp(QMainWindow):
                 order = Order(item, 5)
                 self.order_list.append(order)
             sum_price = 0
-            order_model = QStandardItemModel()
             for i in self.order_list:
                 sum_price += i.price
-                order_model.appendRow(QStandardItem(i.name+"       :      "+str(i.price)))
-            self.sale_p.listView.setModel(order_model)
+                self.order_model.appendRow(QStandardItem(i.name+"       :      "+str(i.price)))
+            self.sale_p.listView.setModel(self.order_model)
             self.sale_p.price_lcd_number.setProperty("intValue", sum_price)
             
     def close_popup(self):

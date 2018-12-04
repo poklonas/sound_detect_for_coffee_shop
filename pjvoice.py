@@ -30,6 +30,7 @@ class Recogning:
             with sr.Microphone() as source:
                 print("listening")
                 audio = self.r.listen(source) 
+                print("listening complete")
             thread = Thread(self.reconizing, audio)
             #thread.signals.result.connect(self.addList2Target)
             self.threadpool.start(thread)
