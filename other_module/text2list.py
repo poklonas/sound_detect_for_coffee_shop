@@ -1,5 +1,6 @@
-from pythainlp.tokenize import word_tokenize,dict_word_tokenize,create_custom_dict_trie
+#from pythainlp.tokenize import word_tokenize,dict_word_tokenize,create_custom_dict_trie
 from pythainlp.tag import pos_tag
+from pythainlp.tokenize import *
 import csv
 
 class CoffeeShopNLP:

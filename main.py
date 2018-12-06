@@ -11,9 +11,7 @@ from manual_menu_popup import Ui_Form as manual_pop
 from sound_detect_popup import Ui_Form as sound_detect_pop 
 from warning_popup import Ui_Form as warn_pop 
 from functools import partial
-
-#import threading
-from pjvoice import Recogning as rc
+from pjvoice import Recogning
 from thread import * 
 
 class MyApp(QMainWindow):
@@ -39,7 +37,7 @@ class MyApp(QMainWindow):
         self.menu = ["เอสเพรสโซ","คาปูชิโน","ลาเต้","มอคค่า","ชา","ชาเขียวนม","ชานม","ดาร์คช็อกโกแลต","นมสด","ช็อกโกแลต"]
         self.price = [40,40,35,30,25,25,30,45,40,45]
         ## cound rc
-        self.rc = rc()
+        self.rc = Recogning()
         #thered
         self.threadpool = QThreadPool()
 

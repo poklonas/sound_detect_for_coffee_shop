@@ -1,7 +1,7 @@
 import speech_recognition as sr
 from pythainlp.tokenize import word_tokenize
 from PyQt5.QtGui import QStandardItemModel
-#from text2list import CoffeeShopNLP
+from other_module.text2list import *
 from thread import * 
 
 class Recogning:
@@ -12,10 +12,15 @@ class Recogning:
         self.threadpool = QThreadPool()
         self.fc_update = None
         self.order_model = QStandardItemModel()
+        self.dic = CoffeeShopNLP()
 
     def reconizing(self,audio):
         text = self.r.recognize_google(audio,language = "th-TH")
-        self.list.append(text)
+        #self.list.append(text)
+        order = self.dic.text_to_item(text)
+        for i in order:
+            self.list.append(i[0])
+            print(i)
         return text
 
     def listen(self, fc_update):
