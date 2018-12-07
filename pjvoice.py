@@ -21,7 +21,7 @@ class Recogning:
         for i in order:
             self.list.append(i[0])
             print(i)
-        return text
+        return order
 
     def listen(self, fc_update):
         self.fc_update = fc_update

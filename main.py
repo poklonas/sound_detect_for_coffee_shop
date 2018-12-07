@@ -190,7 +190,8 @@ class MyApp(QMainWindow):
         self.close_popup()
 
     def update_list_order_popup(self, new_item):
-        self.order_model_popup.appendRow(QStandardItem(new_item))
+        for i in new_item:
+            self.order_model_popup.appendRow(QStandardItem(str(i[0])+":"+str(i[1])))
         self.sound_detect_pop.listOrder.setModel(self.order_model_popup)
             
     def close_popup(self):
