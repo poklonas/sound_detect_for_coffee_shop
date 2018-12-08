@@ -76,30 +76,15 @@ class Ui_MainWindow(object):
         self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
         self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 229, 319))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
-        ######
-        #self.horizontalLayoutWidget = QtWidgets.QWidget(self.scrollAreaWidgetContents_2)
-        #self.horizontalLayoutWidget.setGeometry(QtCore.QRect(0, 0, 231, 25))
-        #self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
-        #self.horizontalLayout = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
-        #self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        #self.horizontalLayout.setObjectName("horizontalLayout")
-        #self.orderA_label = QtWidgets.QLabel(self.horizontalLayoutWidget)
-        #font = QtGui.QFont()
-        #font.setPointSize(14)
-        #self.orderA_label.setFont(font)
-        #self.orderA_label.setObjectName("orderA_label")
-        #self.horizontalLayout.addWidget(self.orderA_label)
-        #self.orderA_del_button = QtWidgets.QPushButton(self.horizontalLayoutWidget)
-        #self.orderA_del_button.setObjectName("orderA_del_button")
-        #self.horizontalLayout.addWidget(self.orderA_del_button)
-        #######
-        self.listView = QtWidgets.QListView(self.scrollAreaWidgetContents_2)
-        self.listView.setGeometry(QtCore.QRect(0, 0, 231, 321))
+        #############################################################################
+        self.tableView = QtWidgets.QTableView(self.scrollAreaWidgetContents_2)
+        self.tableView.setGeometry(QtCore.QRect(0, 0, 231, 321))
         font = QtGui.QFont()
-        font.setPointSize(14)
-        self.listView.setFont(font)
-        self.listView.setObjectName("listView")
-        #######
+        font.setPointSize(11)
+        self.tableView.setFont(font)
+        self.tableView.AdjustToContents = True
+        self.tableView.setObjectName("tableView")
+        ####################################################################################
         self.bill_scroll.setWidget(self.scrollAreaWidgetContents_2)
 
         self.price_lcd_number = QtWidgets.QLCDNumber(self.centralwidget)

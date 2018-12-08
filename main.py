@@ -31,10 +31,8 @@ class MyApp(QMainWindow):
         self.frapmenu_len = 12
         self.etcmenu_len = 8
         ##############################################
-        self.order_list = []
-        self.order_model = QStandardItemModel()
+        self.order = []
         self.price = 0
-        #self.order_model_popup = QStandardItemModel()
         ### temp menu
         self.menu_list = ["เอสเพรสโซ","คาปูชิโน","ลาเต้","มอคค่า","ชา","ชาเขียวนม","ชานม","ดาร์คช็อกโกแลต","นมสด","ช็อกโกแลต"]
         self.price_list = [40,40,35,30,25,25,30,45,40,45]
@@ -122,7 +120,7 @@ class MyApp(QMainWindow):
         for i in items:
             if isinstance(i, QtWidgets.QPushButton):
                 i.setStyleSheet("background-image:url('./image/ice/"+str(count)+".GIF')")
-                i.clicked.connect(lambda: self.manual_add_popup(self.menu[count], self.price[count]))
+                i.clicked.connect(lambda: self.manual_add_popup(self.menu[count], self.price_list[count]))
                 count += 1
 
     def set_frappe_drink(self):
@@ -133,7 +131,7 @@ class MyApp(QMainWindow):
         for i in items:
             if isinstance(i, QtWidgets.QPushButton):
                 i.setStyleSheet("background-image:url('./image/frappe/"+str(count)+".GIF')")
-                i.clicked.connect(lambda: self.manual_add_popup(self.menu[count], self.price[count]))
+                i.clicked.connect(lambda: self.manual_add_popup(self.menu[count], self.price_list[count]))
                 count += 1
 
     def set_etc_menu(self):
@@ -148,56 +146,39 @@ class MyApp(QMainWindow):
                 count += 1
 
     def sound_detect_menu(self):
-        #self.popup = MyPopup()
-        #self.sound_detect_pop.setupUi(self.popup)
-        #self.sound_detect_pop.cancle_button.clicked.connect(self.close_popup)
-        #self.sound_detect_pop.start_stop_button.clicked.connect(self.start_detect_sound)
-        #self.set_disable_salemode_button()
-        #self.popup.show()
         self.start_detect_sound()
 
     def start_detect_sound(self):
-        #t = threading.Thread(target=self.detect)
-        #t.start()
         if(not self.rc.on):
             if(self.threadpool.activeThreadCount() == 0):
-                #self.order_model_popup = QStandardItemModel()
                 thread = Thread(self.detect)
-                #thread.signals.result.connect(self.update_list_order)
                 self.threadpool.start(thread)
         else:
             self.detect()
         
     def detect(self):
         if(not self.rc.on):
-            #self.state = 1
             self.sale_p.sound_detect_button.setText("Stop order by voice")
-            #self.sound_detect_pop.start_stop_button.setText("Stop")
             self.rc.on = True
             return self.rc.listen(self.update_list_order)
         else:
             self.sale_p.sound_detect_button.setText("Start order by voice")
-            #self.sound_detect_pop.start_stop_button.setText("Start")
-            #self.state = 0
             self.rc.on = False
            
     def update_list_order(self, new_list):
         for item in new_list:
             price = item[1] * self.price_list[self.menu_list.index(item[0])]
-            name = str(item[0])+str(item[1])
-            order = Order(name, price)
-            self.order_list.append(order)
-            self.order_model.appendRow(QStandardItem(name+"       :      "+str(price)))
-            self.price =   self.price + price
-        self.sale_p.listView.setModel(self.order_model)
+            name = item[0]
+            self.order.append([name, item[1],price])
+            self.price +=  price
+        order_model = MyOrderTableModel(self.order, self)
+        self.sale_p.tableView.setModel(order_model)
+        header = self.sale_p.tableView.horizontalHeader()
+        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
         self.sale_p.price_lcd_number.setProperty("intValue", self.price)
-        #self.close_popup()
 
-    #def update_list_order_popup(self, new_item):
-        #for i in new_item:
-        #    self.order_model_popup.appendRow(QStandardItem(str(i[0])+":"+str(i[1])))
-        #self.sound_detect_pop.listOrder.setModel(self.order_model_popup)
-            
     def close_popup(self):
         self.set_enabled_salemode_button()
         self.rc.on = False
@@ -209,7 +190,7 @@ class MyApp(QMainWindow):
         self.set_disable_salemode_button()
         self.manual_mpop.manuname_label.setText(name)
         self.manual_mpop.cancle_button.clicked.connect(self.close_popup)
-        self.manual_mpop.add_button.clicked.connect(lambda: self.add_order(name,price))
+        self.manual_mpop.add_button.clicked.connect(lambda: self.add_order(name, 1, price))
         self.popup.show()
 
     def set_disable_salemode_button(self):
@@ -249,35 +230,47 @@ class MyApp(QMainWindow):
         self.sale_p.etcmenu_button.clicked.connect(self.set_etc_menu)
         self.sale_p.sound_detect_button.clicked.connect(self.sound_detect_menu)
 
-    #def set_button_salemanual(self):
-    #    items = self.sale_p.scrollAreaWidgetContents.children()
-    #    count = 0
-    #    for i in items:
-    #        if isinstance(i, QtWidgets.QPushButton):
-    #            i.clicked.connect(lambda: self.manual_add_popup(self.menu[count], self.price[count]))
-    #            count = count + 1
-
-    def add_order(self, name, price):
-        order = Order(name, price)
-        self.order_list.append(order)
-        sum_price = 0
-        order_model = QStandardItemModel()
-        for i in self.order_list:
-            sum_price += i.price
-            order_model.appendRow(QStandardItem(i.name+"       :      "+str(i.price)))
-        self.sale_p.listView.setModel(order_model)
-        self.sale_p.price_lcd_number.setProperty("intValue", sum_price)
+    def add_order(self, name, total, price):
+        self.order.append([name, total, price])
+        self.price += price
+        order_model = MyOrderTableModel(self.order, self)
+        self.sale_p.tableView.setModel(order_model)
+        header = self.sale_p.tableView.horizontalHeader()
+        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        self.sale_p.price_lcd_number.setProperty("intValue", self.price)
         self.close_popup()
 
-        
-class Order():
-    def __init__(self, name, price):
-        self.name = name
-        self.price = price
 
 class MyPopup(QMainWindow):
     def __init__(self, parent=None):
         super(MyPopup, self).__init__(parent)
+
+class MyOrderTableModel(QAbstractTableModel):
+    def __init__(self, dataIn, parent=None, *args):
+        QAbstractTableModel.__init__(self, parent, *args)
+        self.arraydata = dataIn
+        self.headerdata = ['Name','Totoal','Price']
+
+    def rowCount(self, parent):
+        return len(self.arraydata)
+
+    def columnCount(self, parent):
+        return len(self.arraydata[0])
+
+    def data(self, index, role):
+        if not index.isValid():
+            return QVariant()
+        elif role != Qt.DisplayRole:
+            return QVariant()
+        return QVariant(self.arraydata[index.row()][index.column()])
+
+
+    def headerData(self, col, orientation, role):
+        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+            return QVariant(self.headerdata[col])
+        return QVariant()
 
 
 if __name__ == '__main__':
