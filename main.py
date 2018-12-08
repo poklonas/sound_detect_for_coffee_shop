@@ -22,7 +22,7 @@ class MyApp(QMainWindow):
         self.select_p = select_p()
         self.feed_pop = feedback_pop()
         self.manual_mpop = manual_pop()
-        self.sound_detect_pop = sound_detect_pop()
+        #self.sound_detect_pop = sound_detect_pop()
         self.warning_pop = warn_pop()
         self.popup = MyPopup()
         self.open_login_page()
@@ -30,12 +30,14 @@ class MyApp(QMainWindow):
         self.icemenu_len = 17
         self.frapmenu_len = 12
         self.etcmenu_len = 8
+        ##############################################
         self.order_list = []
         self.order_model = QStandardItemModel()
-        self.order_model_popup = QStandardItemModel()
+        self.price = 0
+        #self.order_model_popup = QStandardItemModel()
         ### temp menu
-        self.menu = ["เอสเพรสโซ","คาปูชิโน","ลาเต้","มอคค่า","ชา","ชาเขียวนม","ชานม","ดาร์คช็อกโกแลต","นมสด","ช็อกโกแลต"]
-        self.price = [40,40,35,30,25,25,30,45,40,45]
+        self.menu_list = ["เอสเพรสโซ","คาปูชิโน","ลาเต้","มอคค่า","ชา","ชาเขียวนม","ชานม","ดาร์คช็อกโกแลต","นมสด","ช็อกโกแลต"]
+        self.price_list = [40,40,35,30,25,25,30,45,40,45]
         ## cound rc
         self.rc = Recogning()
         #thered
@@ -109,7 +111,7 @@ class MyApp(QMainWindow):
         for i in items:
             if isinstance(i, QtWidgets.QPushButton):
                 i.setStyleSheet("background-image:url('./image/hot/"+str(count)+".GIF')")
-                i.clicked.connect(partial( self.manual_add_popup,self.menu[count], self.price[count]))
+                i.clicked.connect(partial( self.manual_add_popup,self.menu_list[count], self.price_list[count]))
                 count += 1         
 
     def set_ice_drink(self):
@@ -146,53 +148,55 @@ class MyApp(QMainWindow):
                 count += 1
 
     def sound_detect_menu(self):
-        self.popup = MyPopup()
-        self.sound_detect_pop.setupUi(self.popup)
-        self.sound_detect_pop.cancle_button.clicked.connect(self.close_popup)
-        self.sound_detect_pop.start_stop_button.clicked.connect(self.start_detect_sound)
-        self.state = 0
-        self.set_disable_salemode_button()
-        self.popup.show()
+        #self.popup = MyPopup()
+        #self.sound_detect_pop.setupUi(self.popup)
+        #self.sound_detect_pop.cancle_button.clicked.connect(self.close_popup)
+        #self.sound_detect_pop.start_stop_button.clicked.connect(self.start_detect_sound)
+        #self.set_disable_salemode_button()
+        #self.popup.show()
+        self.start_detect_sound()
 
     def start_detect_sound(self):
         #t = threading.Thread(target=self.detect)
         #t.start()
-        if(self.state == 0):
+        if(not self.rc.on):
             if(self.threadpool.activeThreadCount() == 0):
-                self.order_model_popup = QStandardItemModel()
+                #self.order_model_popup = QStandardItemModel()
                 thread = Thread(self.detect)
-                thread.signals.result.connect(self.update_list_order)
+                #thread.signals.result.connect(self.update_list_order)
                 self.threadpool.start(thread)
         else:
             self.detect()
         
     def detect(self):
-        if(self.state == 0):
-            self.state = 1
-            self.sound_detect_pop.start_stop_button.setText("Stop")
+        if(not self.rc.on):
+            #self.state = 1
+            self.sale_p.sound_detect_button.setText("Stop order by voice")
+            #self.sound_detect_pop.start_stop_button.setText("Stop")
             self.rc.on = True
-            return self.rc.listen(self.update_list_order_popup)
+            return self.rc.listen(self.update_list_order)
         else:
-            self.sound_detect_pop.start_stop_button.setText("Start")
-            self.state = 0
+            self.sale_p.sound_detect_button.setText("Start order by voice")
+            #self.sound_detect_pop.start_stop_button.setText("Start")
+            #self.state = 0
             self.rc.on = False
            
     def update_list_order(self, new_list):
         for item in new_list:
-            order = Order(item, 5)
+            price = item[1]*5
+            name = str(item[0])+str(item[1])
+            order = Order(name, price)
             self.order_list.append(order)
-        sum_price = 0
-        for i in self.order_list:
-            sum_price += i.price
-            self.order_model.appendRow(QStandardItem(i.name+"       :      "+str(i.price)))
+            self.order_model.appendRow(QStandardItem(name+"       :      "+str(price)))
+            self.price =   self.price + price
         self.sale_p.listView.setModel(self.order_model)
-        self.sale_p.price_lcd_number.setProperty("intValue", sum_price)
-        self.close_popup()
+        self.sale_p.price_lcd_number.setProperty("intValue", self.price)
+        #self.close_popup()
 
-    def update_list_order_popup(self, new_item):
-        for i in new_item:
-            self.order_model_popup.appendRow(QStandardItem(str(i[0])+":"+str(i[1])))
-        self.sound_detect_pop.listOrder.setModel(self.order_model_popup)
+    #def update_list_order_popup(self, new_item):
+        #for i in new_item:
+        #    self.order_model_popup.appendRow(QStandardItem(str(i[0])+":"+str(i[1])))
+        #self.sound_detect_pop.listOrder.setModel(self.order_model_popup)
             
     def close_popup(self):
         self.set_enabled_salemode_button()

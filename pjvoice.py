@@ -18,9 +18,9 @@ class Recogning:
         text = self.r.recognize_google(audio,language = "th-TH")
         #self.list.append(text)
         order = self.dic.text_to_item(text)
-        for i in order:
-            self.list.append(i[0])
-            print(i)
+        #for i in order:
+        #    self.list.append(i[0])
+        #    print(i)
         return order
 
     def listen(self, fc_update):
@@ -36,7 +36,7 @@ class Recogning:
             thread.signals.result.connect(self.fc_update)
             self.threadpool.start(thread)
         print("stop all listening")
-        return self.list
+        return None
 
 
 if __name__ == '__main__':
