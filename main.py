@@ -31,11 +31,23 @@ class MyApp(QMainWindow):
         self.frapmenu_len = 12
         self.etcmenu_len = 8
         ##############################################
-        self.order = []
+        self.order = {}
         self.price = 0
         ### temp menu
         self.menu_list = ["เอสเพรสโซ","คาปูชิโน","ลาเต้","มอคค่า","ชา","ชาเขียวนม","ชานม","ดาร์คช็อกโกแลต","นมสด","ช็อกโกแลต"]
         self.price_list = [40,40,35,30,25,25,30,45,40,45]
+        self.menu_dic = {
+            "เอสเพรสโซ" : 40,
+            "คาปูชิโน" : 40,
+            "ลาเต้" : 35,
+            "มอคค่า" : 30,
+            "ชา" : 25,
+            "ชาเขียวนม" : 25,
+            "ชานม" : 30,
+            "ดาร์คช็อกโกแลต" : 45,
+            "นมสด" : 40,
+            "ช็อกโกแลต" : 45
+        }
         ## cound rc
         self.rc = Recogning()
         #thered
@@ -167,16 +179,22 @@ class MyApp(QMainWindow):
            
     def update_list_order(self, new_list):
         for item in new_list:
-            price = item[1] * self.price_list[self.menu_list.index(item[0])]
+            total = item[1]
+            price = total * self.menu_dic[item[0]]
             name = item[0]
-            self.order.append([name, item[1],price])
             self.price +=  price
-        order_model = MyOrderTableModel(self.order, self)
+            if name in self.order:
+                total += self.order[name][1]
+                price += self.order[name][2] 
+                self.order.update({name : [name,total,price]})
+            else:
+                self.order[name] = [name, total, price]
+        order = []
+        for i in self.order.values():
+            order.append(i)
+        order_model = MyOrderTableModel(order, self)
         self.sale_p.tableView.setModel(order_model)
-        header = self.sale_p.tableView.horizontalHeader()
-        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
-        header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        self.adjust_header()
         self.sale_p.price_lcd_number.setProperty("intValue", self.price)
 
     def close_popup(self):
@@ -231,17 +249,27 @@ class MyApp(QMainWindow):
         self.sale_p.sound_detect_button.clicked.connect(self.sound_detect_menu)
 
     def add_order(self, name, total, price):
-        self.order.append([name, total, price])
+        if name in self.order:
+            total += self.order[name][1]
+            price += self.order[name][2] 
+            self.order.update({name : [name,total,price]})
+        else:
+            self.order[name] = [name, total, price]
         self.price += price
-        order_model = MyOrderTableModel(self.order, self)
+        order = []
+        for i in self.order.values():
+            order.append(i)
+        order_model = MyOrderTableModel(order, self)
         self.sale_p.tableView.setModel(order_model)
+        self.adjust_header()
+        self.sale_p.price_lcd_number.setProperty("intValue", self.price)
+        self.close_popup()
+
+    def adjust_header(self):
         header = self.sale_p.tableView.horizontalHeader()
         header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
         header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
         header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        self.sale_p.price_lcd_number.setProperty("intValue", self.price)
-        self.close_popup()
-
 
 class MyPopup(QMainWindow):
     def __init__(self, parent=None):
