@@ -183,7 +183,7 @@ class MyApp(QMainWindow):
            
     def update_list_order(self, new_list):
         for item in new_list:
-            price = item[1]*5
+            price = item[1] * self.price_list[self.menu_list.index(item[0])]
             name = str(item[0])+str(item[1])
             order = Order(name, price)
             self.order_list.append(order)
