@@ -281,7 +281,7 @@ class MyOrderTableModel(QAbstractTableModel):
     def __init__(self, dataIn, parent=None, *args):
         QAbstractTableModel.__init__(self, parent, *args)
         self.arraydata = dataIn
-        self.headerdata = ['Name','Totoal','Price']
+        self.headerdata = ['Name','Qty','Price']
 
     def rowCount(self, parent):
         return len(self.arraydata)
