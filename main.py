@@ -26,7 +26,7 @@ class MyApp(QMainWindow):
         self.warning_pop = warn_pop()
         self.popup = MyPopup()
         self.open_login_page()
-        self.hotmenu_len = 9
+        self.hotmenu_len = 10
         self.icemenu_len = 17
         self.frapmenu_len = 12
         self.etcmenu_len = 8
@@ -179,16 +179,16 @@ class MyApp(QMainWindow):
            
     def update_list_order(self, new_list):
         for item in new_list:
-            total = item[1]
-            price = total * self.menu_dic[item[0]]
+            total_in = item[1]
+            price_in = total * self.menu_dic[item[0]]
             name = item[0]
-            self.price +=  price
+            self.price +=  price_in
             if name in self.order:
-                total += int(self.order[name][1])
-                price += int(self.order[name][2]) 
+                total = int(self.order[name][1] + total_in)
+                price = int(self.order[name][2] + total_in) 
                 self.order.update({name : [name,str(total),str(price)]})
             else:
-                self.order[name] = [name, str(total), str(price)]
+                self.order[name] = [name, str(total_in), str(total_in)]
         order = []
         for i in self.order.values():
             order.append(i)
@@ -248,14 +248,14 @@ class MyApp(QMainWindow):
         self.sale_p.etcmenu_button.clicked.connect(self.set_etc_menu)
         self.sale_p.sound_detect_button.clicked.connect(self.sound_detect_menu)
 
-    def add_order(self, name, total, price):
+    def add_order(self, name, total_in, price_in):
         if name in self.order:
-            total += int(self.order[name][1])
-            price += int(self.order[name][2])
+            total = int(self.order[name][1]) + int(total_in)
+            price = int(price_in * total)
             self.order.update({name : [name,str(total),str(price)]})
         else:
-            self.order[name] = [name, str(total), str(price)]
-        self.price += price
+            self.order[name] = [name, str(total_in), str(price_in)]
+        self.price += price_in * total_in
         order = []
         for i in self.order.values():
             print(i)
