@@ -178,6 +178,7 @@ class MyApp(QMainWindow):
             self.rc.on = False
            
     def update_list_order(self, new_list):
+        print(new_list)
         for item in new_list:
             total_in = item[1]
             price_in = self.menu_dic[item[0]]
@@ -193,10 +194,11 @@ class MyApp(QMainWindow):
         order = []
         for i in self.order.values():
             order.append(i)
-        order_model = MyOrderTableModel(order, self)
-        self.sale_p.tableView.setModel(order_model)
-        self.adjust_header()
-        self.sale_p.price_lcd_number.setProperty("intValue", self.price)
+        if order != []:
+            order_model = MyOrderTableModel(order, self)
+            self.sale_p.tableView.setModel(order_model)
+            self.adjust_header()
+            self.sale_p.price_lcd_number.setProperty("intValue", self.price)
 
     def close_popup(self):
         self.set_enabled_salemode_button()
@@ -259,7 +261,6 @@ class MyApp(QMainWindow):
         self.price += price_in * total_in
         order = []
         for i in self.order.values():
-            print(i)
             order.append(i)
         order_model = MyOrderTableModel(order, self)
         self.sale_p.tableView.setModel(order_model)
