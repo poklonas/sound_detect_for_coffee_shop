@@ -184,11 +184,11 @@ class MyApp(QMainWindow):
             name = item[0]
             self.price +=  price
             if name in self.order:
-                total += self.order[name][1]
-                price += self.order[name][2] 
-                self.order.update({name : [name,total,price]})
+                total += int(self.order[name][1])
+                price += int(self.order[name][2]) 
+                self.order.update({name : [name,str(total),str(price)]})
             else:
-                self.order[name] = [name, total, price]
+                self.order[name] = [name, str(total), str(price)]
         order = []
         for i in self.order.values():
             order.append(i)
@@ -250,14 +250,15 @@ class MyApp(QMainWindow):
 
     def add_order(self, name, total, price):
         if name in self.order:
-            total += self.order[name][1]
-            price += self.order[name][2] 
-            self.order.update({name : [name,total,price]})
+            total += int(self.order[name][1])
+            price += int(self.order[name][2])
+            self.order.update({name : [name,str(total),str(price)]})
         else:
-            self.order[name] = [name, total, price]
+            self.order[name] = [name, str(total), str(price)]
         self.price += price
         order = []
         for i in self.order.values():
+            print(i)
             order.append(i)
         order_model = MyOrderTableModel(order, self)
         self.sale_p.tableView.setModel(order_model)
