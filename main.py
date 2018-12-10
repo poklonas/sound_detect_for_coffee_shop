@@ -180,13 +180,14 @@ class MyApp(QMainWindow):
     def update_list_order(self, new_list):
         for item in new_list:
             total_in = item[1]
-            price_in = total_in * self.menu_dic[item[0]]
+            price_in = self.menu_dic[item[0]]
+            #price_in = total_in * self.menu_dic[item[0]]
             name = item[0]
-            self.price +=  price_in
+            self.price +=  price_in * total_in
             if name in self.order:
                 total = int(self.order[name][1]) + int(total_in)
-                price = int(self.order[name][2]) + int(price_in) 
-                self.order.update({name : [name,str(total),str(price)]})
+                #price = int(self.order[name][2]) + int(price_in) 
+                self.order.update({name : [name,str(total),str(price_in)]})
             else:
                 self.order[name] = [name, str(total_in), str(price_in)]
         order = []
@@ -252,7 +253,7 @@ class MyApp(QMainWindow):
         if name in self.order:
             total = int(self.order[name][1]) + int(total_in)
             price = int(price_in * total)
-            self.order.update({name : [name,str(total),str(price)]})
+            self.order.update({name : [name,str(total),str(price_in)]})
         else:
             self.order[name] = [name, str(total_in), str(price_in)]
         self.price += price_in * total_in

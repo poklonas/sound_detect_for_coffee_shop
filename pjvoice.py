@@ -16,11 +16,7 @@ class Recogning:
 
     def reconizing(self,audio):
         text = self.r.recognize_google(audio,language = "th-TH")
-        #self.list.append(text)
         order = self.dic.text_to_item(text)
-        #for i in order:
-        #    self.list.append(i[0])
-        #    print(i)
         return order
 
     def listen(self, fc_update):
