@@ -10,6 +10,7 @@ from feedback_popup import Ui_Form as feedback_pop
 from manual_menu_popup import Ui_Form as manual_pop 
 from sound_detect_popup import Ui_Form as sound_detect_pop 
 from warning_popup import Ui_Form as warn_pop 
+from saleinfo_page import Ui_MainWindow as saleinfo_p
 from functools import partial
 from pjvoice import Recogning
 from thread import * 
@@ -20,6 +21,7 @@ class MyApp(QMainWindow):
         self.login_p = login_p()
         self.sale_p = sale_p()
         self.select_p = select_p()
+        self.saleinfo_p = saleinfo_p()
         self.feed_pop = feedback_pop()
         self.manual_mpop = manual_pop()
         #self.sound_detect_pop = sound_detect_pop()
@@ -79,6 +81,7 @@ class MyApp(QMainWindow):
     def set_select_page_action(self):
         self.select_p.logout_button.clicked.connect(self.open_login_page)
         self.select_p.salemode_button.clicked.connect(self.open_sale_page)
+        self.select_p.saleinfo_button.clicked.connect(self.open_saleinfo_page)
 
     def open_login_page(self):
         self.login_p.setupUi(self)
@@ -89,6 +92,11 @@ class MyApp(QMainWindow):
         self.sale_p.setupUi(self)
         self.set_hot_drink()
         self.set_sale_page_action()
+        self.show()
+
+    def open_saleinfo_page(self):
+        self.saleinfo_p.setupUi(self)
+        self.set_saleinfo_page_action()
         self.show()
 
     def remove_button(self):
@@ -249,6 +257,9 @@ class MyApp(QMainWindow):
         self.sale_p.frapemenu_button.clicked.connect(self.set_frappe_drink)
         self.sale_p.etcmenu_button.clicked.connect(self.set_etc_menu)
         self.sale_p.sound_detect_button.clicked.connect(self.sound_detect_menu)
+
+    def set_saleinfo_page_action(self):
+        pass
 
     def add_order(self, name, total_in, price_in):
         if name in self.order:
