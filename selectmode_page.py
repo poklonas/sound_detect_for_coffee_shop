@@ -32,12 +32,22 @@ class Ui_MainWindow(object):
         font.setPointSize(36)
         self.salemode_button.setFont(font)
         self.salemode_button.setObjectName("salemode_button")
+
         self.saleinfo_button = QtWidgets.QPushButton(self.centralwidget)
         self.saleinfo_button.setGeometry(QtCore.QRect(60, 200, 1191, 61))
         font = QtGui.QFont()
         font.setPointSize(36)
         self.saleinfo_button.setFont(font)
         self.saleinfo_button.setObjectName("saleinfo_button")
+
+        self.update_rule_button = QtWidgets.QPushButton(self.centralwidget)
+        self.update_rule_button.setGeometry(QtCore.QRect(60, 280, 1191, 61))
+        font = QtGui.QFont()
+        font.setPointSize(36)
+        self.update_rule_button.setFont(font)
+        self.update_rule_button.setObjectName("update_rule_button")
+
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -53,4 +63,5 @@ class Ui_MainWindow(object):
         self.logout_button.setText(_translate("MainWindow", "Logout"))
         self.salemode_button.setText(_translate("MainWindow", "Sale Mode"))
         self.saleinfo_button.setText(_translate("MainWindow", "Sale Information"))
+        self.update_rule_button.setText(_translate("MainWindow", "Update Rule"))
 

@@ -178,7 +178,6 @@ class MyApp(QMainWindow):
             self.rc.on = False
            
     def update_list_order(self, new_list):
-        print(new_list)
         for item in new_list:
             total_in = item[1]
             price_in = self.menu_dic[item[0]]
