@@ -263,7 +263,7 @@ class MyApp(QMainWindow):
         self.saleinfo_p.search_button.clicked.connect(self.update_table_saleinfo)
 
     def update_table_saleinfo(self):
-        print("wait update")
+        self.saleinfo_p.update_table('newDB.db')
 
     def update_rule(self):
         print("wait update rule")

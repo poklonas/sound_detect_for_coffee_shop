@@ -7,6 +7,8 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import sqlite3
+import datetime
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -67,7 +69,6 @@ class Ui_MainWindow(object):
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -87,3 +88,39 @@ class Ui_MainWindow(object):
         item = self.tableWidget.horizontalHeaderItem(3)
         item.setText(_translate("MainWindow", "Items"))
 
+    def update_table(self, path):
+        conn = sqlite3.connect(path)
+        query = """ SELECT o.id, o.time, o.time, f.name, op.name FROM DetailOrder d
+                    INNER JOIN Optional op ON op.id == d.optionalID
+                    INNER JOIN FOOD f ON f.id == d.foodID
+                    INNER JOIN Orders o ON o.id == d.orderID
+                """
+        result = conn.execute(query)
+        self.tableWidget.setRowCount(0)
+        last_id = None
+        last_item = None
+        last_row = -1
+        span_row = None
+        count = 1
+        for row_data in list(result):
+            last_row += 1
+            self.tableWidget.insertRow(last_row)
+            if(row_data[4] == "Normal"):
+                menu = str(row_data[3])
+            else:
+                menu = str(row_data[3]) + " and " + str(row_data[4])
+            if(last_id == row_data[0]):
+                count += 1
+                self.tableWidget.setSpan(span_row, 0, count, 1)
+                self.tableWidget.setSpan(span_row, 1, count, 1)
+                self.tableWidget.setSpan(span_row, 2, count, 1)
+                self.tableWidget.setItem(last_row, 3, QtWidgets.QTableWidgetItem(menu))
+            else:
+                count = 1
+                span_row = last_row
+                date_time_obj = datetime.datetime.strptime(row_data[1], '%Y-%m-%d %H:%M:%S')
+                self.tableWidget.setItem(last_row, 0, QtWidgets.QTableWidgetItem(str(row_data[0])))
+                self.tableWidget.setItem(last_row, 1, QtWidgets.QTableWidgetItem(str(date_time_obj.date())))
+                self.tableWidget.setItem(last_row, 2, QtWidgets.QTableWidgetItem(str(date_time_obj.time())))
+                self.tableWidget.setItem(last_row, 3, QtWidgets.QTableWidgetItem(menu))
+            last_id = row_data[0]
