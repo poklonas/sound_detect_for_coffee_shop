@@ -78,11 +78,6 @@ class MyApp(QMainWindow):
         self.set_select_page_action()
         self.show()
 
-    def set_select_page_action(self):
-        self.select_p.logout_button.clicked.connect(self.open_login_page)
-        self.select_p.salemode_button.clicked.connect(self.open_sale_page)
-        self.select_p.saleinfo_button.clicked.connect(self.open_saleinfo_page)
-
     def open_login_page(self):
         self.login_p.setupUi(self)
         self.set_login_page_action()
@@ -249,6 +244,11 @@ class MyApp(QMainWindow):
             if isinstance(i, QtWidgets.QPushButton):
                 i.setEnabled(True)
 
+    def set_select_page_action(self):
+        self.select_p.logout_button.clicked.connect(self.open_login_page)
+        self.select_p.salemode_button.clicked.connect(self.open_sale_page)
+        self.select_p.saleinfo_button.clicked.connect(self.open_saleinfo_page)
+        self.select_p.update_rule_button.clicked.connect(self.update_rule)
 
     def set_sale_page_action(self):
         self.sale_p.back_button.clicked.connect(self.open_select_page)
@@ -259,7 +259,14 @@ class MyApp(QMainWindow):
         self.sale_p.sound_detect_button.clicked.connect(self.sound_detect_menu)
 
     def set_saleinfo_page_action(self):
-        pass
+        self.saleinfo_p.back_button.clicked.connect(self.open_select_page)
+        self.saleinfo_p.search_button.clicked.connect(self.update_table_saleinfo)
+
+    def update_table_saleinfo(self):
+        print("wait update")
+
+    def update_rule(self):
+        print("wait update rule")
 
     def add_order(self, name, total_in, price_in):
         if name in self.order:
