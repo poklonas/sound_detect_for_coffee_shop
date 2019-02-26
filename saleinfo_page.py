@@ -40,6 +40,7 @@ class Ui_MainWindow(object):
         self.stopDate.setMaximumDate(QDate.currentDate())
         self.startDate.clicked.connect(self.startDateClicked)
         self.stopDate.clicked.connect(self.stopDateClicked)
+        self.stopDate.setSelectedDate(QDate.currentDate())
 
         self.startDateVal = self.startDate.selectedDate()
         self.stopDateVal = self.stopDate.selectedDate()
@@ -100,15 +101,16 @@ class Ui_MainWindow(object):
 
     def update_table(self, path):
         conn = sqlite3.connect(path)
-        query = """ SELECT o.id, o.time, o.time, f.name, op.name FROM DetailOrder d
+        query = """ SELECT o.id, o.time, f.name, op.name FROM DetailOrder d
                     INNER JOIN Optional op ON op.id == d.optionalID
                     INNER JOIN FOOD f ON f.id == d.foodID
                     INNER JOIN Orders o ON o.id == d.orderID
-                    WHERE o.time BETWEEN ? AND ?;
+                    WHERE strftime('%Y-%m-%d', o.time) between ? AND ?
                 """
-        start = self.format(self.startDate.selectedDate())
-        stop = self.format(self.stopDate.selectedDate())
-        start_stop = ( start, stop )
+        start = self.format_date((self.startDate.selectedDate()))
+        stop = self.format_date((self.stopDate.selectedDate()).addDays(1))
+        start_stop = ( start, stop, )
+        print(start_stop)
         result = conn.execute(query, start_stop)
         self.tableWidget.setRowCount(0)
         last_id = None
@@ -119,10 +121,10 @@ class Ui_MainWindow(object):
         for row_data in list(result):
             last_row += 1
             self.tableWidget.insertRow(last_row)
-            if(row_data[4] == "Normal"):
-                menu = str(row_data[3])
+            if(row_data[3] == "Normal"):
+                menu = str(row_data[2])
             else:
-                menu = str(row_data[3]) + " and " + str(row_data[4])
+                menu = str(row_data[2]) + " and " + str(row_data[3])
             if(last_id == row_data[0]):
                 count += 1
                 self.tableWidget.setSpan(span_row, 0, count, 1)
@@ -151,5 +153,14 @@ class Ui_MainWindow(object):
         else:
             self.stopDateVal = self.stopDate.selectedDate()
 
-    def format(self, date):
-        return str(date.year())+'-'+str(date.month())+'-'+str(date.day())
+    def format_date(self, datetext):
+        y = str(datetext.year())
+        if datetext.month() < 10:
+            m = '0'+str(datetext.month())
+        else:
+            m = str(datetext.month())
+        if datetext.day() < 10:
+            d = '0'+str(datetext.day())
+        else:
+            d = str(datetext.day())
+        return y + '-' + m + '-' + d

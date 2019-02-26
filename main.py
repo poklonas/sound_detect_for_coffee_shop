@@ -14,6 +14,8 @@ from saleinfo_page import Ui_MainWindow as saleinfo_p
 from functools import partial
 from pjvoice import Recogning
 from thread import * 
+import sqlite3
+import datetime
 
 class MyApp(QMainWindow):
     def __init__(self, parent=None):
@@ -257,6 +259,7 @@ class MyApp(QMainWindow):
         self.sale_p.frapemenu_button.clicked.connect(self.set_frappe_drink)
         self.sale_p.etcmenu_button.clicked.connect(self.set_etc_menu)
         self.sale_p.sound_detect_button.clicked.connect(self.sound_detect_menu)
+        self.sale_p.bill_button.clicked.connect(self.add_order_to_db)
 
     def set_saleinfo_page_action(self):
         self.saleinfo_p.back_button.clicked.connect(self.open_select_page)
@@ -264,6 +267,14 @@ class MyApp(QMainWindow):
 
     def update_table_saleinfo(self):
         self.saleinfo_p.update_table('newDB2.db')
+
+    def add_order_to_db(self):
+        conn = sqlite3.connect('newDB2.db')
+        c = conn.cursor()
+        c.execute("INSERT INTO Orders (time) VALUES (?)", ( datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), ))
+        order_id = list(c.execute("SELECT MAX(id) FROM Orders"))
+        c.execute("INSERT INTO DetailOrder (orderID, foodID, optionalID) VALUES (?,?,?)", (  order_id[0][0],  24,  1) )
+        conn.commit()
 
     def update_rule(self):
         print("wait update rule")
