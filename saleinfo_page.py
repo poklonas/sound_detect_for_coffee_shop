@@ -7,6 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QDate
 import sqlite3
 import datetime
 
@@ -28,12 +29,21 @@ class Ui_MainWindow(object):
         font.setPointSize(20)
         self.search_button.setFont(font)
         self.search_button.setObjectName("search_button")
+
         self.startDate = QtWidgets.QCalendarWidget(self.centralwidget)
         self.startDate.setGeometry(QtCore.QRect(10, 120, 312, 183))
         self.startDate.setObjectName("startDate")
+        self.startDate.setMaximumDate(QDate.currentDate())
         self.stopDate = QtWidgets.QCalendarWidget(self.centralwidget)
         self.stopDate.setGeometry(QtCore.QRect(10, 360, 312, 183))
         self.stopDate.setObjectName("stopDate")
+        self.stopDate.setMaximumDate(QDate.currentDate())
+        self.startDate.clicked.connect(self.startDateClicked)
+        self.stopDate.clicked.connect(self.stopDateClicked)
+
+        self.startDateVal = self.startDate.selectedDate()
+        self.stopDateVal = self.stopDate.selectedDate()
+
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(110, 80, 121, 41))
         font = QtGui.QFont()
@@ -94,8 +104,12 @@ class Ui_MainWindow(object):
                     INNER JOIN Optional op ON op.id == d.optionalID
                     INNER JOIN FOOD f ON f.id == d.foodID
                     INNER JOIN Orders o ON o.id == d.orderID
+                    WHERE o.time BETWEEN ? AND ?;
                 """
-        result = conn.execute(query)
+        start = self.format(self.startDate.selectedDate())
+        stop = self.format(self.stopDate.selectedDate())
+        start_stop = ( start, stop )
+        result = conn.execute(query, start_stop)
         self.tableWidget.setRowCount(0)
         last_id = None
         last_item = None
@@ -124,3 +138,18 @@ class Ui_MainWindow(object):
                 self.tableWidget.setItem(last_row, 2, QtWidgets.QTableWidgetItem(str(date_time_obj.time())))
                 self.tableWidget.setItem(last_row, 3, QtWidgets.QTableWidgetItem(menu))
             last_id = row_data[0]
+
+    def startDateClicked(self):
+        if(self.startDate.selectedDate() > self.stopDate.selectedDate()):
+            self.startDate.setSelectedDate(self.startDateVal)
+        else:
+            self.startDateVal = self.startDate.selectedDate()
+
+    def stopDateClicked(self):
+        if(self.startDate.selectedDate() > self.stopDate.selectedDate()):
+            self.stopDate.setSelectedDate(self.stopDateVal)
+        else:
+            self.stopDateVal = self.stopDate.selectedDate()
+
+    def format(self, date):
+        return str(date.year())+'-'+str(date.month())+'-'+str(date.day())
