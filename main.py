@@ -14,8 +14,10 @@ from saleinfo_page import Ui_MainWindow as saleinfo_p
 from functools import partial
 from pjvoice import Recogning
 from thread import * 
+import collections
 import sqlite3
 import datetime
+import csv
 
 class MyApp(QMainWindow):
     def __init__(self, parent=None):
@@ -27,36 +29,67 @@ class MyApp(QMainWindow):
         self.feed_pop = feedback_pop()
         self.manual_mpop = manual_pop()
         #self.sound_detect_pop = sound_detect_pop()
-        self.warning_pop = warn_pop()
+        #self.warning_pop = warn_pop()
         self.popup = MyPopup()
         self.open_login_page()
-        self.hotmenu_len = 10
-        self.icemenu_len = 17
-        self.frapmenu_len = 12
-        self.etcmenu_len = 8
+        #####################################################
+        # menu dic each menu has a list of these component
+        # string of name_th  name_en   price    pic    
+        # and list string of optional
+        # menu_dic_price is for sound process only
+        #####################################################
+        self.menu_dic_price = collections.defaultdict(int)
+        self.menu_dic = {
+                    "menu_hot"   : self.set_menu_to_list('menu_config/menu_hot.csv'),
+                    "menu_ice"   : self.set_menu_to_list('menu_config/menu_ice.csv'),
+                    "menu_frap"  : self.set_menu_to_list('menu_config/menu_frap.csv'),
+                    "menu_snack" : self.set_menu_to_list('menu_config/menu_snack.csv'),
+                    }
+        ### count menu in each type
+        self.hotmenu_len = len(self.menu_dic["menu_hot"])
+        self.icemenu_len = len(self.menu_dic["menu_ice"])
+        self.frapmenu_len = len(self.menu_dic["menu_frap"])
+        self.etcmenu_len = len(self.menu_dic["menu_snack"])
         ##############################################
         self.order = {}
         self.price = 0
-        ### temp menu
-        self.menu_list = ["เอสเพรสโซ","คาปูชิโน","ลาเต้","มอคค่า","ชา","ชาเขียวนม","ชานม","ดาร์คช็อกโกแลต","นมสด","ช็อกโกแลต"]
-        self.price_list = [40,40,35,30,25,25,30,45,40,45]
-        self.menu_dic = {
-            "เอสเพรสโซ" : 40,
-            "คาปูชิโน" : 40,
-            "ลาเต้" : 35,
-            "มอคค่า" : 30,
-            "ชา" : 25,
-            "ชาเขียวนม" : 25,
-            "ชานม" : 30,
-            "ดาร์คช็อกโกแลต" : 45,
-            "นมสด" : 40,
-            "ช็อกโกแลต" : 45
-        }
+        ### temp menu wait for delete
+        #self.menu_list = ["เอสเพรสโซ","คาปูชิโน","ลาเต้","มอคค่า","ชา","ชาเขียวนม","ชานม","ดาร์คช็อกโกแลต","นมสด","ช็อกโกแลต"]
+        #self.price_list = [40,40,35,30,25,25,30,45,40,45]
+        #self.menu_dic = {
+        #    "เอสเพรสโซ" : 40,
+        #    "คาปูชิโน" : 40,
+        #    "ลาเต้" : 35,
+        #    "มอคค่า" : 30,
+        #    "ชา" : 25,
+        #    "ชาเขียวนม" : 25,
+        #    "ชานม" : 30,
+        #    "ดาร์คช็อกโกแลต" : 45,
+        #    "นมสด" : 40,
+        #    "ช็อกโกแลต" : 45
+        #}
         ## cound rc
         self.rc = Recogning()
         #thered
         self.threadpool = QThreadPool()
 
+    def set_menu_to_list(self, path_file):
+        result = []
+        with open (path_file, 'r',encoding='utf-8') as  csvf:
+            reader = csv.reader(csvf)
+            header = next(reader, None)
+            for row in reader:
+                option = list(row[-1].split("-"))
+                menu = {
+                    header[0] : row[0],
+                    header[1] : row[1],
+                    header[2] : row[2],
+                    header[3] : row[3],
+                    header[4] : option,
+                }
+                result.append(menu)
+                self.menu_dic_price[row[1]] = (row[2])
+        return result
 
     def set_login_page_action(self):
         self.login_p.login_button.clicked.connect(self.login)
@@ -125,8 +158,9 @@ class MyApp(QMainWindow):
         count = 0
         for i in items:
             if isinstance(i, QtWidgets.QPushButton):
+                #i.setStyleSheet("background-image:url('"+str(self.menu_dic["menu_hot"][count]['pic'])+"')")
                 i.setStyleSheet("background-image:url('./image/hot/"+str(count)+".GIF')")
-                i.clicked.connect(partial( self.manual_add_popup,self.menu_list[count], self.price_list[count]))
+                i.clicked.connect(partial( self.manual_add_popup,self.menu_dic["menu_hot"][count]))
                 count += 1         
 
     def set_ice_drink(self):
@@ -137,7 +171,8 @@ class MyApp(QMainWindow):
         for i in items:
             if isinstance(i, QtWidgets.QPushButton):
                 i.setStyleSheet("background-image:url('./image/ice/"+str(count)+".GIF')")
-                i.clicked.connect(lambda: self.manual_add_popup(self.menu[count], self.price_list[count]))
+                i.clicked.connect(partial( self.manual_add_popup,self.menu_dic["menu_ice"][count]))
+                #i.clicked.connect(lambda: self.manual_add_popup(self.menu_dic["menu_ice"][count]))
                 count += 1
 
     def set_frappe_drink(self):
@@ -148,7 +183,8 @@ class MyApp(QMainWindow):
         for i in items:
             if isinstance(i, QtWidgets.QPushButton):
                 i.setStyleSheet("background-image:url('./image/frappe/"+str(count)+".GIF')")
-                i.clicked.connect(lambda: self.manual_add_popup(self.menu[count], self.price_list[count]))
+                i.clicked.connect(partial( self.manual_add_popup,self.menu_dic["menu_frap"][count]))
+                #i.clicked.connect(lambda: self.manual_add_popup(self.menu_dic["menu_frap"][count]))
                 count += 1
 
     def set_etc_menu(self):
@@ -159,7 +195,8 @@ class MyApp(QMainWindow):
         for i in items:
             if isinstance(i, QtWidgets.QPushButton):
                 i.setStyleSheet("background-image:url('./image/etc/"+str(count)+".GIF')")
-                i.clicked.connect(lambda: self.manual_add_popup(self.menu[count], self.price[count]))
+                i.clicked.connect(partial( self.manual_add_popup,self.menu_dic["menu_snack"][count]))
+                #i.clicked.connect(lambda: self.manual_add_popup(self.menu_dic["menu_snack"][count]))
                 count += 1
 
     def sound_detect_menu(self):
@@ -184,8 +221,8 @@ class MyApp(QMainWindow):
            
     def update_list_order(self, new_list):
         for item in new_list:
-            total_in = item[1]
-            price_in = self.menu_dic[item[0]]
+            total_in = int(item[1])
+            price_in = int(self.menu_dic_price[item[0]])
             #price_in = total_in * self.menu_dic[item[0]]
             name = item[0]
             self.price +=  price_in * total_in
@@ -209,13 +246,13 @@ class MyApp(QMainWindow):
         self.rc.on = False
         self.popup.close()
 
-    def manual_add_popup(self, name, price):
+    def manual_add_popup(self, menu):
         self.popup = MyPopup()
         self.manual_mpop.setupUi(self.popup)
         self.set_disable_salemode_button()
-        self.manual_mpop.manuname_label.setText(name)
+        self.manual_mpop.manuname_label.setText(menu["name_en"])
         self.manual_mpop.cancle_button.clicked.connect(self.close_popup)
-        self.manual_mpop.add_button.clicked.connect(lambda: self.add_order(name, 1, price))
+        self.manual_mpop.add_button.clicked.connect(lambda: self.add_order(menu["name_en"], 1, menu["price"]))
         self.popup.show()
 
     def set_disable_salemode_button(self):
@@ -273,7 +310,7 @@ class MyApp(QMainWindow):
         c = conn.cursor()
         c.execute("INSERT INTO Orders (time) VALUES (?)", ( datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), ))
         order_id = list(c.execute("SELECT MAX(id) FROM Orders"))
-        c.execute("INSERT INTO DetailOrder (orderID, foodID, optionalID) VALUES (?,?,?)", (  order_id[0][0],  24,  1) )
+        c.execute("INSERT INTO DetailOrder (orderID, foodID, optionalID) VALUES (?,?,?)", (  order_id[0][0],  11,  2) )
         conn.commit()
 
     def update_rule(self):

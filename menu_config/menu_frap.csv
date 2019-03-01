@@ -1,0 +1,13 @@
+name_th,name_en,price,pic,optional
+เอสเพรสโซปั่น,Frappe_Espresso,50,./image/frappe/Frappe_Espresso.GIF,No_Sugar-Low_Sugar-Add_Sugar-No_Milk-Low_Milk-Add_Milk-Whip_Cream
+คาปูชิโนปั่น,Frappe_Cappuccino,55,./image/frappe/Frappe_Cappuccino.GIF,No_Sugar-Low_Sugar-Add_Sugar-No_Milk-Low_Milk-Add_Milk-Whip_Cream
+ลาเต้ปั่น,Frappe_Latte,55,./image/frappe/Frappe_Latte.GIF,No_Sugar-Low_Sugar-Add_Sugar-No_Milk-Low_Milk-Add_Milk-Whip_Cream
+มอคค่าปั่น,Frappe_Mocha,60,./image/frappe/Frappe_Mocha.GIF,No_Sugar-Low_Sugar-Add_Sugar-No_Milk-Low_Milk-Add_Milk-Whip_Cream
+ชาเขียวนมปั่น,Frappe_Green_Tea_with_Milk,60,./image/frappe/Frappe_Green_Tea_with_Milk.GIF,No_Sugar-Low_Sugar-Add_Sugar-No_Milk-Low_Milk-Add_Milk-Whip_Cream
+ชานมปั่น,Frappe_Milk_Tea,50,./image/frappe/Frappe_Milk_Tea.GIF,No_Sugar-Low_Sugar-Add_Sugar-No_Milk-Low_Milk-Add_Milk-Whip_Cream
+โกโก้ปั่น,Frappe_Dark_chocolate,50,./image/frappe/Frappe_Dark_chocolate.GIF,No_Sugar-Low_Sugar-Add_Sugar-No_Milk-Low_Milk-Add_Milk-Whip_Cream
+นมปั่น,Frappe_Fresh_Milk,50,./image/frappe/Frappe_Fresh_Milk.GIF,No_Sugar-Low_Sugar-Add_Sugar-No_Milk-Low_Milk-Add_Milk-Whip_Cream
+ช็อกโกแลตปั่น,Frappe_Chocolate,50,./image/frappe/Frappe_Chocolate.GIF,No_Sugar-Low_Sugar-Add_Sugar-No_Milk-Low_Milk-Add_Milk-Whip_Cream
+ลิ้นจี่ปั่น,Frappe_Lynchee_Juice,55,./image/frappe/Frappe_Lynchee_Juice.GIF,No_Sugar-Low_Sugar-Add_Sugar-No_Milk-Low_Milk-Add_Milk-Whip_Cream
+สตอร์เบอร์รีปั่น,Frappe_Strawberry_juice,55,./image/frappe/Frappe_Strawberry_juice.GIF,No_Sugar-Low_Sugar-Add_Sugar-No_Milk-Low_Milk-Add_Milk-Whip_Cream
+กิวี่ปั่น,Frappe_Kiwi_Juice,55,./image/frappe/Frappe_Kiwi_Juice.GIF,No_Sugar-Low_Sugar-Add_Sugar-No_Milk-Low_Milk-Add_Milk-Whip_Cream
