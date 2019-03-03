@@ -32,6 +32,7 @@ class MyApp(QMainWindow):
         #self.warning_pop = warn_pop()
         self.popup = MyPopup()
         self.open_login_page()
+        self.dbname = 'newDB2.db'
         #####################################################
         # menu dic each menu has a list of these component
         # string of name_th  name_en   price    pic    
@@ -50,6 +51,11 @@ class MyApp(QMainWindow):
         self.icemenu_len = len(self.menu_dic["menu_ice"])
         self.frapmenu_len = len(self.menu_dic["menu_frap"])
         self.etcmenu_len = len(self.menu_dic["menu_snack"])
+        ### food and optional id from db 
+        self.food_id = collections.defaultdict(int)
+        self.set_food_id_dic()
+        self.optional_id = collections.defaultdict(int)
+        self.set_optional_id_dic()
         ##############################################
         self.order = {}
         self.price = 0
@@ -90,6 +96,23 @@ class MyApp(QMainWindow):
                 result.append(menu)
                 self.menu_dic_price[row[1]] = (row[2])
         return result
+
+    def set_food_id_dic(self):
+        conn = sqlite3.connect(self.dbname)
+        c = conn.cursor()
+        foods = c.execute("SELECT Food.id, Food.name From Food")
+        conn.commit()
+        for food in list(foods):
+            self.food_id[food[1]] = food[0]
+
+    def set_optional_id_dic(self):
+        conn = sqlite3.connect(self.dbname)
+        c = conn.cursor()
+        optionals = c.execute("SELECT Optional.id, Optional.name From Optional")
+        conn.commit()
+        for optional in list(optionals):
+            self.optional_id[optional[1]] = optional[0]
+
 
     def set_login_page_action(self):
         self.login_p.login_button.clicked.connect(self.login)
@@ -158,8 +181,9 @@ class MyApp(QMainWindow):
         count = 0
         for i in items:
             if isinstance(i, QtWidgets.QPushButton):
+                i.setStyleSheet("background-image:url("+str(self.menu_dic["menu_hot"][count]['pic'])+")")
                 #i.setStyleSheet("background-image:url('"+str(self.menu_dic["menu_hot"][count]['pic'])+"')")
-                i.setStyleSheet("background-image:url('./image/hot/"+str(count)+".GIF')")
+                #i.setStyleSheet("background-image:url('./image/hot/"+str(count)+".GIF')")
                 i.clicked.connect(partial( self.manual_add_popup,self.menu_dic["menu_hot"][count]))
                 count += 1         
 
@@ -170,7 +194,8 @@ class MyApp(QMainWindow):
         count = 0
         for i in items:
             if isinstance(i, QtWidgets.QPushButton):
-                i.setStyleSheet("background-image:url('./image/ice/"+str(count)+".GIF')")
+                i.setStyleSheet("background-image:url("+str(self.menu_dic["menu_ice"][count]['pic'])+")")
+                #i.setStyleSheet("background-image:url('./image/ice/"+str(count)+".GIF')")
                 i.clicked.connect(partial( self.manual_add_popup,self.menu_dic["menu_ice"][count]))
                 #i.clicked.connect(lambda: self.manual_add_popup(self.menu_dic["menu_ice"][count]))
                 count += 1
@@ -182,7 +207,8 @@ class MyApp(QMainWindow):
         count = 0
         for i in items:
             if isinstance(i, QtWidgets.QPushButton):
-                i.setStyleSheet("background-image:url('./image/frappe/"+str(count)+".GIF')")
+                i.setStyleSheet("background-image:url("+str(self.menu_dic["menu_frap"][count]['pic'])+")")
+                #i.setStyleSheet("background-image:url('./image/frappe/"+str(count)+".GIF')")
                 i.clicked.connect(partial( self.manual_add_popup,self.menu_dic["menu_frap"][count]))
                 #i.clicked.connect(lambda: self.manual_add_popup(self.menu_dic["menu_frap"][count]))
                 count += 1
@@ -194,7 +220,8 @@ class MyApp(QMainWindow):
         count = 0
         for i in items:
             if isinstance(i, QtWidgets.QPushButton):
-                i.setStyleSheet("background-image:url('./image/etc/"+str(count)+".GIF')")
+                i.setStyleSheet("background-image:url("+str(self.menu_dic["menu_snack"][count]['pic'])+")")
+                #i.setStyleSheet("background-image:url('./image/etc/"+str(count)+".GIF')")
                 i.clicked.connect(partial( self.manual_add_popup,self.menu_dic["menu_snack"][count]))
                 #i.clicked.connect(lambda: self.manual_add_popup(self.menu_dic["menu_snack"][count]))
                 count += 1
@@ -252,7 +279,15 @@ class MyApp(QMainWindow):
         self.set_disable_salemode_button()
         self.manual_mpop.manuname_label.setText(menu["name_en"])
         self.manual_mpop.cancle_button.clicked.connect(self.close_popup)
-        self.manual_mpop.add_button.clicked.connect(lambda: self.add_order(menu["name_en"], 1, menu["price"]))
+        if(menu['optional'][0] == 'n'):
+            self.manual_mpop.set_sugar_disable()
+        if(menu['optional'][1] == 'n'):
+            self.manual_mpop.set_milk_disable()
+        if(menu['optional'][2] == 'n'):
+            self.manual_mpop.set_cream_disable()
+        if(menu['optional'][3] == 'n'):
+            self.manual_mpop.set_whipcream_disable()
+        self.manual_mpop.add_button.clicked.connect(lambda: self.add_order(menu["name_en"], 1, menu["price"], self.manual_mpop.get_option()))
         self.popup.show()
 
     def set_disable_salemode_button(self):
@@ -303,30 +338,56 @@ class MyApp(QMainWindow):
         self.saleinfo_p.search_button.clicked.connect(self.update_table_saleinfo)
 
     def update_table_saleinfo(self):
-        self.saleinfo_p.update_table('newDB2.db')
+        self.saleinfo_p.update_table(self.dbname)
 
     def add_order_to_db(self):
-        conn = sqlite3.connect('newDB2.db')
+        conn = sqlite3.connect(self.dbname)
         c = conn.cursor()
-        c.execute("INSERT INTO Orders (time) VALUES (?)", ( datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), ))
-        order_id = list(c.execute("SELECT MAX(id) FROM Orders"))
-        c.execute("INSERT INTO DetailOrder (orderID, foodID, optionalID) VALUES (?,?,?)", (  order_id[0][0],  11,  2) )
+        dateT = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        for (menu, qty, price) in self.order.values():
+            c.execute("INSERT INTO Orders (time) VALUES (?)", ( dateT, ))
+            order_id = c.lastrowid
+            split_menu = menu.split('.')
+            foodname = split_menu[0]
+            optional = split_menu[1:]
+            foodid = self.food_id[foodname]
+            if optional != []:
+                 for i in range(0,int(qty)):
+                    c.execute("INSERT INTO DetailOrder (orderID, foodID) VALUES (?,?)", (  order_id,  foodid,) )
+                    last_detail_id = c.lastrowid
+                    for option in optional:
+                        optionID = self.optional_id[option]
+                        c.execute("INSERT INTO Detailorder_option (orderDetailID,optionalID) VALUES (?,?)", (last_detail_id, optionID,))
+            else:
+                for i in range(0,int(qty)):
+                    print('add', order_id, foodid, 0)
+                    c.execute("INSERT INTO DetailOrder (orderID, foodID) VALUES (?,?)", (  order_id,  foodid,) )
         conn.commit()
+        self.order = {}
+        self.price = 0
+        order_model = MyOrderTableModel([[]], self)
+        self.sale_p.tableView.setModel(order_model)
+        self.adjust_header()
+        self.sale_p.price_lcd_number.setProperty("intValue", self.price)
 
     def update_rule(self):
         print("wait update rule")
 
-    def add_order(self, name, total_in, price_in):
+    def add_order(self, name, total_in, price_in, options):
+        for option in options:
+            if option != 'Normal':
+                name += '.' + option
         if name in self.order:
             total = int(self.order[name][1]) + int(total_in)
             price = int(price_in * total)
             self.order.update({name : [name,str(total),str(price_in)]})
         else:
             self.order[name] = [name, str(total_in), str(price_in)]
-        self.price += price_in * total_in
+        self.price += int(price_in) * int(total_in)
         order = []
         for i in self.order.values():
             order.append(i)
+            print(order)
         order_model = MyOrderTableModel(order, self)
         self.sale_p.tableView.setModel(order_model)
         self.adjust_header()

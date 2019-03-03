@@ -76,6 +76,7 @@ class Ui_MainWindow(object):
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1279, 21))
         self.menubar.setObjectName("menubar")
+        self.tableWidget.verticalHeader().setVisible(False)
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -101,8 +102,9 @@ class Ui_MainWindow(object):
 
     def update_table(self, path):
         conn = sqlite3.connect(path)
-        query = """ SELECT o.id, o.time, f.name, op.name FROM DetailOrder d
-                    INNER JOIN Optional op ON op.id == d.optionalID
+        query = """ SELECT o.id, o.time, f.name, op.name AS option , do.orderDetailID FROM DetailOrder d
+                    LEFT JOIN Detailorder_option do ON do.orderDetailID == d.id
+                    LEFT JOIN Optional op ON op.id == do.optionalID
                     INNER JOIN FOOD f ON f.id == d.foodID
                     INNER JOIN Orders o ON o.id == d.orderID
                     WHERE strftime('%Y-%m-%d', o.time) between ? AND ?
@@ -110,21 +112,27 @@ class Ui_MainWindow(object):
         start = self.format_date((self.startDate.selectedDate()))
         stop = self.format_date((self.stopDate.selectedDate()).addDays(1))
         start_stop = ( start, stop, )
-        print(start_stop)
         result = conn.execute(query, start_stop)
         self.tableWidget.setRowCount(0)
         last_id = None
         last_item = None
         last_row = -1
         span_row = None
+        last_detail_id = None
+        last_menu = None
         count = 1
         for row_data in list(result):
             last_row += 1
             self.tableWidget.insertRow(last_row)
-            if(row_data[3] == "Normal"):
+            if(row_data[3] == None):
                 menu = str(row_data[2])
             else:
-                menu = str(row_data[2]) + " and " + str(row_data[3])
+                if(last_detail_id != row_data[4]):
+                    menu = str(row_data[2]) + " and " + str(row_data[3])
+                    last_menu = menu
+                else:
+                    menu = last_menu + " and " + str(row_data[3])
+                last_detail_id = row_data[4]
             if(last_id == row_data[0]):
                 count += 1
                 self.tableWidget.setSpan(span_row, 0, count, 1)

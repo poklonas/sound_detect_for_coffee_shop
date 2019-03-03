@@ -80,7 +80,7 @@ class Ui_MainWindow(object):
         self.tableView = QtWidgets.QTableView(self.scrollAreaWidgetContents_2)
         self.tableView.setGeometry(QtCore.QRect(0, 0, 231, 321))
         font = QtGui.QFont()
-        font.setPointSize(11)
+        font.setPointSize(8)
         self.tableView.setFont(font)
         self.tableView.AdjustToContents = True
         self.tableView.setObjectName("tableView")

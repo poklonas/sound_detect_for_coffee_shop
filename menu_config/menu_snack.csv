@@ -1,9 +1,9 @@
 name_th,name_en,price,pic,optional
-คุกกี้,Cookie,35,./image/etc/Cookie.GIF',Normal
-บราวนี่,Brownies,40,./image/etc/Brownies.GIF',Normal
-ขนมเค้ก,Cake,60,./image/etc/Cake.GIF',Normal
-ครัวซอง,Croissant,40,./image/etc/Croissant.GIF',Normal
-ฮอทดอก,hotdog,45,./image/etc/hotdog.GIF',Normal
-ขนมปังปิ้ง,Toast20,./image/etc/Toast20.GIF',Normal
-ฮันนี่โทส,honey-toast,95,./image/etc/honey-toast.GIF',Normal
-แฮมเบอร์เกอร์,hamburger,40,./image/etc/hamburger.GIF',Normal
+คุกกี้,Cookie,35,./image/etc/Cookie.GIF,n-n-n-n
+บราวนี่,Brownies,40,./image/etc/Brownies.GIF,n-n-n-n
+ขนมเค้ก,Cake,60,./image/etc/Cake.GIF,n-n-n-n
+ครัวซอง,Croissant,40,./image/etc/Croissant.GIF,n-n-n-n
+ฮอทดอก,hotdog,45,./image/etc/hotdog.GIF,n-n-n-n
+ขนมปังปิ้ง,Toast,20,./image/etc/Toast.GIF,n-n-n-n
+ฮันนี่โทส,honey-toast,95,./image/etc/honey-toast.GIF,n-n-n-n
+แฮมเบอร์เกอร์,hamburger,40,./image/etc/hamburger.GIF,n-n-n-n
