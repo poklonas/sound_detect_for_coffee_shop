@@ -1,7 +1,7 @@
 import speech_recognition as sr
 from pythainlp.tokenize import word_tokenize
 from PyQt5.QtGui import QStandardItemModel
-from other_module.text2list import *
+from text2list import *
 from thread import * 
 
 class Recogning:
@@ -17,6 +17,7 @@ class Recogning:
     def reconizing(self,audio):
         text = self.r.recognize_google(audio,language = "th-TH")
         order = self.dic.text_to_item(text)
+        print("pj", order)
         return order
 
     def listen(self, fc_update):
