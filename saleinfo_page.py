@@ -102,7 +102,7 @@ class Ui_MainWindow(object):
 
     def update_table(self, path):
         conn = sqlite3.connect(path)
-        query = """ SELECT o.id, o.time, f.name, op.name AS option , do.orderDetailID FROM DetailOrder d
+        query = """ SELECT o.id, o.time, f.name, op.name AS option , do.orderDetailID, f.size FROM DetailOrder d
                     LEFT JOIN Detailorder_option do ON do.orderDetailID == d.id
                     LEFT JOIN Optional op ON op.id == do.optionalID
                     INNER JOIN FOOD f ON f.id == d.foodID
@@ -125,7 +125,7 @@ class Ui_MainWindow(object):
             last_row += 1
             self.tableWidget.insertRow(last_row)
             if(row_data[3] == None):
-                menu = str(row_data[2])
+                menu = str(row_data[2]) + '[' + str(row_data[5]) + ']'
             else:
                 if(last_detail_id != row_data[4]):
                     menu = str(row_data[2]) + " and " + str(row_data[3])

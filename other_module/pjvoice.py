@@ -1,7 +1,7 @@
 import speech_recognition as sr
 from pythainlp.tokenize import word_tokenize
 from PyQt5.QtGui import QStandardItemModel
-from text2list import *
+from .text2list import *
 from thread import * 
 
 class Recogning:

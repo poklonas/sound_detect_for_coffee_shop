@@ -25,7 +25,7 @@ class CoffeeShopNLP:
                 self.normwords.append(row)
         #print(self.normwords)
 
-   def text_to_item(self,text):
+    def text_to_item(self,text):
         print(text)
         text=self.replace_word(text)
         words=dict_word_tokenize(text,self.menu_dict)

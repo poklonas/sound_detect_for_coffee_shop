@@ -85,7 +85,7 @@ c.execute("INSERT INTO Food (name, price, size, path) VALUES ('Cake',45,'N','./i
 c.execute("INSERT INTO Food (name, price, size, path) VALUES ('Croissant',25,'N','./image/etc/Croissant.GIF')")
 c.execute("INSERT INTO Food (name, price, size, path) VALUES ('hotdog',80,'N','./image/etc/hotdog.GIF')")
 c.execute("INSERT INTO Food (name, price, size, path) VALUES ('Toast',35,'N','./image/etc/Toast.GIF')")
-c.execute("INSERT INTO Food (name, price, size, path) VALUES ('honey-toast',25,'N','./image/etc/honey.GIF')")
+c.execute("INSERT INTO Food (name, price, size, path) VALUES ('honey-toast',25,'N','./image/etc/honey-toast.GIF')")
 c.execute("INSERT INTO Food (name, price, size, path) VALUES ('hamburger',20,'N','./image/etc/hamburger.GIF')")
 
 

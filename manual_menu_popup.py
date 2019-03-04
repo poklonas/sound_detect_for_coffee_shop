@@ -66,6 +66,15 @@ class Ui_Form(object):
         self.whipCreamBox.addItem("")
         self.whipCreamBox.addItem("")
 
+        self.label_5 = QtWidgets.QLabel(Form)
+        self.label_5.setGeometry(QtCore.QRect(40, 300, 71, 20))
+        self.label_5.setObjectName("Size")
+        self.sizeBox = QtWidgets.QComboBox(Form)
+        self.sizeBox.setGeometry(QtCore.QRect(150, 300, 131, 16))
+        self.sizeBox.setObjectName("sizeBox")
+        self.sizeBox.addItem("")
+        self.sizeBox.addItem("")
+
         self.add_button = QtWidgets.QPushButton(Form)
         self.add_button.setGeometry(QtCore.QRect(20, 410, 341, 91))
         font = QtGui.QFont()
@@ -90,6 +99,9 @@ class Ui_Form(object):
         val.append(self.whipCreamBox.currentText())
         return val
 
+    def get_size(self):
+        return self.sizeBox.currentText()
+
     def set_sugar_disable(self):
         self.sugarBox.setEnabled(False)
 
@@ -101,6 +113,9 @@ class Ui_Form(object):
 
     def set_whipcream_disable(self):
         self.whipCreamBox.setEnabled(False)
+
+    def set_size_disable(self):
+        self.sizeBox.setEnabled(False)
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
@@ -127,3 +142,6 @@ class Ui_Form(object):
         self.label_4.setText(_translate("Form", "Whip_Cream"))
         self.whipCreamBox.setItemText(0, _translate("Form", "Normal"))
         self.whipCreamBox.setItemText(1, _translate("Form", "Whip_Cream"))
+        self.label_5.setText(_translate("Form", "Size"))
+        self.sizeBox.setItemText(0, _translate("Form", "M"))
+        self.sizeBox.setItemText(1, _translate("Form", "L"))
