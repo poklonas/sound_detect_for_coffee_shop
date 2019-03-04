@@ -1,7 +1,7 @@
 import sqlite3
 import datetime
 
-conn = sqlite3.connect('newDB2.db')
+conn = sqlite3.connect('newDB3.db')
 c = conn.cursor()
 
 ## do some thing
