@@ -122,24 +122,27 @@ class Ui_MainWindow(object):
         last_menu = None
         count = 1
         for row_data in list(result):
-            last_row += 1
-            self.tableWidget.insertRow(last_row)
-            if(row_data[3] == None):
+            if(row_data[3] == None): # none option
                 menu = str(row_data[2]) + '[' + str(row_data[5]) + ']'
-            else:
-                if(last_detail_id != row_data[4]):
-                    menu = str(row_data[2]) + " and " + str(row_data[3])
-                    last_menu = menu
+            else: # has option
+                if(last_detail_id != row_data[4]):  # new detail order?
+                    menu = str(row_data[2]) + '[' + str(row_data[5]) + ']' + " and " + str(row_data[3])
                 else:
                     menu = last_menu + " and " + str(row_data[3])
-                last_detail_id = row_data[4]
-            if(last_id == row_data[0]):
-                count += 1
-                self.tableWidget.setSpan(span_row, 0, count, 1)
-                self.tableWidget.setSpan(span_row, 1, count, 1)
-                self.tableWidget.setSpan(span_row, 2, count, 1)
+                last_menu = menu
+            if(last_id == row_data[0]): # old order ?
+                if( last_detail_id != row_data[4] ):
+                    last_row += 1
+                    self.tableWidget.insertRow(last_row)
+                    count += 1
+                if(count > 1):
+                    self.tableWidget.setSpan(span_row, 0, count, 1)
+                    self.tableWidget.setSpan(span_row, 1, count, 1)
+                    self.tableWidget.setSpan(span_row, 2, count, 1)
                 self.tableWidget.setItem(last_row, 3, QtWidgets.QTableWidgetItem(menu))
-            else:
+            else: # new order
+                last_row += 1
+                self.tableWidget.insertRow(last_row)
                 count = 1
                 span_row = last_row
                 date_time_obj = datetime.datetime.strptime(row_data[1], '%Y-%m-%d %H:%M:%S')
@@ -147,6 +150,7 @@ class Ui_MainWindow(object):
                 self.tableWidget.setItem(last_row, 1, QtWidgets.QTableWidgetItem(str(date_time_obj.date())))
                 self.tableWidget.setItem(last_row, 2, QtWidgets.QTableWidgetItem(str(date_time_obj.time())))
                 self.tableWidget.setItem(last_row, 3, QtWidgets.QTableWidgetItem(menu))
+            last_detail_id = row_data[4]
             last_id = row_data[0]
 
     def startDateClicked(self):

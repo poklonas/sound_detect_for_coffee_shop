@@ -323,15 +323,14 @@ class MyApp(QMainWindow):
         conn = sqlite3.connect(self.dbname)
         c = conn.cursor()
         dateT = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        c.execute("INSERT INTO Orders (time) VALUES (?)", ( dateT, ))
+        order_id = c.lastrowid
         for (menu, qty, price) in self.order.values():
-            c.execute("INSERT INTO Orders (time) VALUES (?)", ( dateT, ))
-            order_id = c.lastrowid
             split_menu = menu.split('.') # => ['menu[M]', option1, option2 , ...]
             foodname = split_menu[0]
             optional = split_menu[1:]
             foodname = foodname.split('[') # => ['menu', 'M]']
             foodid = self.food_id_and_price[(foodname[0],foodname[1][0])][0]
-            print(foodid)
             if optional != []:
                  for i in range(0,int(qty)):
                     c.execute("INSERT INTO DetailOrder (orderID, foodID) VALUES (?,?)", (  order_id,  foodid,) )
@@ -341,7 +340,6 @@ class MyApp(QMainWindow):
                         c.execute("INSERT INTO Detailorder_option (orderDetailID,optionalID) VALUES (?,?)", (last_detail_id, optionID,))
             else:
                 for i in range(0,int(qty)):
-                    print('add', order_id, foodid, 0)
                     c.execute("INSERT INTO DetailOrder (orderID, foodID) VALUES (?,?)", (  order_id,  foodid,) )
         conn.commit()
         self.order = {}
