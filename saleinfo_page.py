@@ -131,7 +131,7 @@ class Ui_MainWindow(object):
                     menu = last_menu + " and " + str(row_data[3])
                 last_menu = menu
             if(last_id == row_data[0]): # old order ?
-                if( last_detail_id != row_data[4] ):
+                if( last_detail_id != row_data[4] or row_data[3] == None):
                     last_row += 1
                     self.tableWidget.insertRow(last_row)
                     count += 1
