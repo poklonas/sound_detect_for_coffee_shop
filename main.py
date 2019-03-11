@@ -14,6 +14,8 @@ from saleinfo_page import Ui_MainWindow as saleinfo_p
 from functools import partial
 from other_module.pjvoice import Recogning
 from thread import * 
+from my_association import update_rule 
+import pickle 
 import collections
 import sqlite3
 import datetime
@@ -50,6 +52,8 @@ class MyApp(QMainWindow):
         self.price = 0
         self.rc = Recogning()
         self.threadpool = QThreadPool()
+        with open('rule.result', 'rb') as file:
+            self.rule_and_header = pickle.load(file)
 
     def set_drink_to_list(self, typeIn, size):
         conn = sqlite3.connect(self.dbname)
@@ -224,7 +228,6 @@ class MyApp(QMainWindow):
             self.sale_p.sound_detect_button.setText("Start order by voice")
             self.rc.on = False
            
-    #wait for update
     def update_list_order(self, new_list):
         for item in new_list:
             total_in = int(item[1])
@@ -350,7 +353,7 @@ class MyApp(QMainWindow):
         self.sale_p.price_lcd_number.setProperty("intValue", self.price)
 
     def update_rule(self):
-        print("wait update rule")
+        update_rule(self.dbname, 'rule.result')
 
     def add_order(self, name, total_in, size, options):
         price_in = self.food_id_and_price[(name,size)][1]
