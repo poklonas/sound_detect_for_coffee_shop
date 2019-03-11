@@ -15,6 +15,7 @@ from functools import partial
 from other_module.pjvoice import Recogning
 from thread import * 
 from my_association import update_rule 
+from recom_window import Recom_window 
 import pickle 
 import collections
 import sqlite3
@@ -22,7 +23,7 @@ import datetime
 import csv
 
 class MyApp(QMainWindow):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, recom_window=None):
         QWidget.__init__(self, parent)
         self.login_p = login_p()
         self.sale_p = sale_p()
@@ -36,6 +37,7 @@ class MyApp(QMainWindow):
         self.food_id_and_price = collections.defaultdict(int)
         self.optional_id = collections.defaultdict(int)
         self.set_optional_id_dic()
+        self.menu_pic = collections.defaultdict(str)
         self.menu_dic = {
                     ("menu_hot", "M")   : self.set_drink_to_list('Hot','M'),
                     ("menu_ice", "M")   : self.set_drink_to_list('Ice','M'),
@@ -55,6 +57,7 @@ class MyApp(QMainWindow):
         self.threadpool = QThreadPool()
         with open('rule.result', 'rb') as file:
             self.rule_and_header = pickle.load(file)
+        self.recom = recom_window
 
     def set_drink_to_list(self, typeIn, size):
         conn = sqlite3.connect(self.dbname)
@@ -64,6 +67,7 @@ class MyApp(QMainWindow):
         result = []
         for drink in list(drinks):
             self.food_id_and_price[(drink[1], drink[3])] = [drink[0], drink[2]]
+            self.menu_pic[drink[1]] = drink[4]
             menu = {
                     'size'  : drink[3],
                     'name'  : drink[1],
@@ -85,6 +89,7 @@ class MyApp(QMainWindow):
         result = []
         for snack in list(snacks):
             self.food_id_and_price[(snack[1], snack[3])] = [snack[0], snack[2]]
+            self.menu_pic[snack[1]] = snack[4]
             menu = {
                     'size'  : snack[3],
                     'name'  : snack[1],
@@ -245,14 +250,14 @@ class MyApp(QMainWindow):
             order.append(i)
         if order != []:
             order_model = MyOrderTableModel(order, self)
-            self.sale_p.tableView.setModel(order_model)
-            self.adjust_header()
-            self.sale_p.price_lcd_number.setProperty("intValue", self.price)
         else:
             order_model = MyOrderTableModel([[None,None,None]], self)
-            self.sale_p.tableView.setModel(order_model)
-            self.adjust_header()
-            self.sale_p.price_lcd_number.setProperty("intValue", self.price)
+        self.sale_p.tableView.setModel(order_model)
+        self.adjust_header()
+        self.recom.order_table.setModel(order_model)
+        self.recom.adjust_header()
+        self.sale_p.price_lcd_number.setProperty("intValue", self.price)
+        self.recom.price_lcd_number.setProperty("intValue", self.price)
 
     def close_popup(self):
         self.set_enabled_salemode_button()
@@ -363,6 +368,9 @@ class MyApp(QMainWindow):
         self.adjust_header()
         self.sale_p.price_lcd_number.setProperty("intValue", self.price)
         self.order_tuple = ()
+        self.recom.order_table.setModel(order_model)
+        self.recom.adjust_header()
+        self.recom.price_lcd_number.setProperty("intValue", self.price)
 
     def update_rule(self):
         update_rule(self.dbname, 'rule.result')
@@ -395,6 +403,9 @@ class MyApp(QMainWindow):
         self.adjust_header()
         self.sale_p.price_lcd_number.setProperty("intValue", self.price)
         self.show_recommend()
+        self.recom.order_table.setModel(order_model)
+        self.recom.adjust_header()
+        self.recom.price_lcd_number.setProperty("intValue", self.price)
         self.close_popup()
         
     def show_recommend(self):
@@ -404,7 +415,13 @@ class MyApp(QMainWindow):
             if(order_in == i[0]):
                 for j in i[1]:
                     show_set += (self.rule_and_header[1][j],)
-        print(frozenset(show_set))
+        if(show_set == ()):
+            return None
+        rec_list = []
+        for i in frozenset(show_set):   
+            rec_list.append(self.menu_pic[i])
+        self.recom.update_recom(rec_list)
+
 
     def adjust_header(self):
         header = self.sale_p.tableView.horizontalHeader()
@@ -446,6 +463,8 @@ class MyOrderTableModel(QAbstractTableModel):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    myapp = MyApp()
+    recom_window_new = Recom_window()
+    recom_window_new.show()
+    myapp = MyApp(recom_window = recom_window_new)
     myapp.show()
     sys.exit(app.exec_())
