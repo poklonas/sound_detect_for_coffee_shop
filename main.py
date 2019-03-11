@@ -49,6 +49,7 @@ class MyApp(QMainWindow):
         self.frapmenu_len = len(self.menu_dic[("menu_frap", "M")])
         self.etcmenu_len = len(self.menu_dic[("menu_snack", "N")])
         self.order = {}
+        self.order_tuple = ()
         self.price = 0
         self.rc = Recogning()
         self.threadpool = QThreadPool()
@@ -335,7 +336,10 @@ class MyApp(QMainWindow):
             foodname = split_menu[0]
             optional = split_menu[1:]
             foodname = foodname.split('[') # => ['menu', 'M]']
-            foodid = self.food_id_and_price[(foodname[0],foodname[1][0])][0]
+            if(len(foodname) < 2):
+                foodid = self.food_id_and_price[(foodname[0],'N')][0]    
+            else:
+                foodid = self.food_id_and_price[(foodname[0],foodname[1][0])][0]
             if optional != []:
                  for i in range(0,int(qty)):
                     c.execute("INSERT INTO DetailOrder (orderID, foodID) VALUES (?,?)", (  order_id,  foodid,) )
@@ -356,8 +360,12 @@ class MyApp(QMainWindow):
 
     def update_rule(self):
         update_rule(self.dbname, 'rule.result')
-
+        with open('rule.result', 'rb') as file:
+            self.rule_and_header = pickle.load(file)
+        print("update rule complete")
+        
     def add_order(self, name, total_in, size, options):
+        self.order_tuple += (self.rule_and_header[2][name],)
         if(self.food_id_and_price[(name,size)] != 0):
             price_in = self.food_id_and_price[(name,size)][1]
             name += '['+size+'] '
@@ -380,7 +388,17 @@ class MyApp(QMainWindow):
         self.sale_p.tableView.setModel(order_model)
         self.adjust_header()
         self.sale_p.price_lcd_number.setProperty("intValue", self.price)
+        self.show_recommend()
         self.close_popup()
+        
+    def show_recommend(self):
+        order_in = frozenset(self.order_tuple)
+        show_set = ()
+        for i in self.rule_and_header[0]:
+            if(order_in == i[0]):
+                for j in i[1]:
+                    show_set += (self.rule_and_header[1][j],)
+        print(frozenset(show_set))
 
     def adjust_header(self):
         header = self.sale_p.tableView.horizontalHeader()

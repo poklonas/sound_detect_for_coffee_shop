@@ -16,8 +16,10 @@ def update_rule(dbfile, target):
     query = """ SELECT f.id ,f.name FROM Food f """
     headers = conn.execute(query)
     header_list = {}
+    header_id = {}
     for header in headers:
         header_list[header[0]] = header[1]
+        header_id[header[1]] = header[0]
         #header_list.append(ContinuousVariable.make(str(header[1])))
     #domain = Domain(header_list)
     order_list = []
@@ -34,4 +36,4 @@ def update_rule(dbfile, target):
     rule = orange_asso.association_rules(item_set, .4)
     rules = list(rule)
     with open(target, 'wb') as file:
-        pickle.dump([rules,header_list], file)
+        pickle.dump([rules,header_list,header_id], file)
