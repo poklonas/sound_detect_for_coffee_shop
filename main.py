@@ -269,6 +269,8 @@ class MyApp(QMainWindow):
             self.manual_mpop.set_whipcream_disable()
         if(menu['name'][0:3] == "Hot"):
             self.manual_mpop.set_size_disable()
+        if(menu['name'][0:3] not in ["Hot", "Ice", "Frap"]):
+            self.manual_mpop.set_size_disable()
         self.manual_mpop.add_button.clicked.connect(lambda: self.add_order(menu["name"], 1, self.manual_mpop.get_size(), self.manual_mpop.get_option()))
         self.popup.show()
 
@@ -356,8 +358,11 @@ class MyApp(QMainWindow):
         update_rule(self.dbname, 'rule.result')
 
     def add_order(self, name, total_in, size, options):
-        price_in = self.food_id_and_price[(name,size)][1]
-        name += '['+size+'] '
+        if(self.food_id_and_price[(name,size)] != 0):
+            price_in = self.food_id_and_price[(name,size)][1]
+            name += '['+size+'] '
+        else:
+            price_in = self.food_id_and_price[(name,'N')][1]
         for option in options:
             if option != 'Normal':
                 name += '.' + option
