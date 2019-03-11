@@ -248,6 +248,11 @@ class MyApp(QMainWindow):
             self.sale_p.tableView.setModel(order_model)
             self.adjust_header()
             self.sale_p.price_lcd_number.setProperty("intValue", self.price)
+        else:
+            order_model = MyOrderTableModel([[None,None,None]], self)
+            self.sale_p.tableView.setModel(order_model)
+            self.adjust_header()
+            self.sale_p.price_lcd_number.setProperty("intValue", self.price)
 
     def close_popup(self):
         self.set_enabled_salemode_button()
@@ -353,10 +358,11 @@ class MyApp(QMainWindow):
         conn.commit()
         self.order = {}
         self.price = 0
-        order_model = MyOrderTableModel([[]], self)
+        order_model = MyOrderTableModel([[None,None,None]], self)
         self.sale_p.tableView.setModel(order_model)
         self.adjust_header()
         self.sale_p.price_lcd_number.setProperty("intValue", self.price)
+        self.order_tuple = ()
 
     def update_rule(self):
         update_rule(self.dbname, 'rule.result')
@@ -417,6 +423,8 @@ class MyOrderTableModel(QAbstractTableModel):
         self.headerdata = ['Name','Qty','Price']
 
     def rowCount(self, parent):
+        if(self.arraydata == [[None,None,None]]):
+            return 0
         return len(self.arraydata)
 
     def columnCount(self, parent):
