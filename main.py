@@ -256,6 +256,7 @@ class MyApp(QMainWindow):
         self.adjust_header()
         self.recom.order_table.setModel(order_model)
         self.recom.adjust_header()
+        self.sale_p.tableView.setWordWrap(True)
         self.sale_p.price_lcd_number.setProperty("intValue", self.price)
         self.recom.price_lcd_number.setProperty("intValue", self.price)
 
@@ -282,7 +283,7 @@ class MyApp(QMainWindow):
             self.manual_mpop.set_size_disable()
         if(menu['name'][0:3] not in ["Hot", "Ice", "Frap"]):
             self.manual_mpop.set_size_disable()
-        self.manual_mpop.add_button.clicked.connect(lambda: self.add_order(menu["name"], 1, self.manual_mpop.get_size(), self.manual_mpop.get_option()))
+        self.manual_mpop.add_button.clicked.connect(lambda: self.add_order(menu["name"], self.manual_mpop.get_qty(), self.manual_mpop.get_size(), self.manual_mpop.get_option()))
         self.popup.show()
 
     def set_disable_salemode_button(self):
@@ -333,7 +334,7 @@ class MyApp(QMainWindow):
         self.saleinfo_p.search_button.clicked.connect(self.update_table_saleinfo)
 
     def update_table_saleinfo(self):
-        self.saleinfo_p.update_table(self.dbname)
+        self.saleinfo_p.update_table(self.dbname, self.food_id_and_price)
 
     def add_order_to_db(self):
         conn = sqlite3.connect(self.dbname)
@@ -428,6 +429,7 @@ class MyApp(QMainWindow):
         header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
         header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
         header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+
 
 class MyPopup(QMainWindow):
     def __init__(self, parent=None):
