@@ -143,6 +143,10 @@ class MyApp(QMainWindow):
         self.update_list_order([])
         self.show()
 
+    def open_select_page_from_sale(self):
+        self.reset_order()
+        self.open_sale_page()
+
     def open_saleinfo_page(self):
         self.saleinfo_p.setupUi(self)
         self.set_saleinfo_page_action()
@@ -321,7 +325,7 @@ class MyApp(QMainWindow):
         self.select_p.update_rule_button.clicked.connect(self.update_rule)
 
     def set_sale_page_action(self):
-        self.sale_p.back_button.clicked.connect(self.open_select_page)
+        self.sale_p.back_button.clicked.connect(self.open_select_page_from_sale)
         self.sale_p.icemenu_button.clicked.connect(self.set_ice_drink)
         self.sale_p.hotmenu_button.clicked.connect(self.set_hot_drink)
         self.sale_p.frapemenu_button.clicked.connect(self.set_frappe_drink)
@@ -362,6 +366,9 @@ class MyApp(QMainWindow):
                 for i in range(0,int(qty)):
                     c.execute("INSERT INTO DetailOrder (orderID, foodID) VALUES (?,?)", (  order_id,  foodid,) )
         conn.commit()
+        self.reset_order()
+
+    def reset_order(self):
         self.order = {}
         self.price = 0
         order_model = MyOrderTableModel([[None,None,None]], self)

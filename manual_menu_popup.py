@@ -203,7 +203,7 @@ class Ui_Form(object):
     def set_cream_disable(self):
         self.creamAdd.setEnabled(False)
         self.creamLow.setEnabled(False)
-        self.creamLow.setEnabled(False)
+        self.creamNone.setEnabled(False)
         self.creamNormal.setEnabled(False)
 
     def set_whipcream_disable(self):
