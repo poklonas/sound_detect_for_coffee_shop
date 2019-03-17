@@ -42,6 +42,10 @@ class Ui_MainWindow(object):
         self.stopDate.clicked.connect(self.stopDateClicked)
         self.stopDate.setSelectedDate(QDate.currentDate())
 
+        self.startDate.setVerticalHeaderFormat(QtWidgets.QCalendarWidget.NoVerticalHeader)
+        self.stopDate.setVerticalHeaderFormat(QtWidgets.QCalendarWidget.NoVerticalHeader)
+        self.startDate.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
+        self.stopDate.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
         self.startDateVal = self.startDate.selectedDate()
         self.stopDateVal = self.stopDate.selectedDate()
 

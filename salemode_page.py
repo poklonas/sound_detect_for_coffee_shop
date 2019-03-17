@@ -83,6 +83,7 @@ class Ui_MainWindow(object):
         font.setPointSize(8)
         self.tableView.setFont(font)
         self.tableView.AdjustToContents = True
+        self.tableView.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
         self.tableView.setObjectName("tableView")
         ####################################################################################
         self.bill_scroll.setWidget(self.scrollAreaWidgetContents_2)
