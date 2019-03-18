@@ -451,7 +451,8 @@ class MyApp(QMainWindow):
         self.recom.close()
 
     def add_status(self, status):
-        item = QtGui.QStandardItem(status)
+        dateT = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        item = QtGui.QStandardItem(str(dateT)+" : " +status)
         self.status.insertRow(0, item)
 
     def reset_status(self):
