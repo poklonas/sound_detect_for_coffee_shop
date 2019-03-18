@@ -241,8 +241,8 @@ class MyApp(QMainWindow):
     def update_list_order(self, new_list):
         for item in new_list:
             total_in = int(item[1])
-            price_in = int(self.menu_dic_price[item[0]])
             name = item[0]
+            price_in = int(self.food_id_and_price[(name,item[3])][1])
             self.price +=  price_in * total_in
             if name in self.order:
                 total = int(self.order[name][1]) + int(total_in)
