@@ -59,6 +59,7 @@ class MyApp(QMainWindow):
             self.rule_and_header = pickle.load(file)
         self.recom = recom_window
         self.recom.set_parent(self)
+        self.status = QtGui.QStandardItemModel()
 
     def set_drink_to_list(self, typeIn, size):
         conn = sqlite3.connect(self.dbname)
@@ -141,12 +142,18 @@ class MyApp(QMainWindow):
         self.sale_p.setupUi(self)
         self.set_hot_drink()
         self.set_sale_page_action()
-        self.update_list_order([])
+        order = {
+            "status" : None,
+            "item" : [],
+        }
+        self.update_list_order(order)
+        self.sale_p.status.setModel(self.status)
         self.show()
 
     def open_select_page_from_sale(self):
         self.reset_order()
-        self.open_sale_page()
+        self.reset_status()
+        self.open_select_page()
 
     def open_saleinfo_page(self):
         self.saleinfo_p.setupUi(self)
@@ -174,7 +181,6 @@ class MyApp(QMainWindow):
             self.sale_p.gridLayout.addWidget(menu, i/4, i%4, 1, 1)
         self.sale_p.gridLayout.update()
 
-    # ----- 232*161 for picture button
     def set_hot_drink(self):
         self.remove_button()
         self.add_button(self.hotmenu_len)
@@ -239,8 +245,8 @@ class MyApp(QMainWindow):
             self.sale_p.sound_detect_button.setText("Start order by voice")
             self.rc.on = False
            
-    def update_list_order(self, new_list):
-        for item in new_list:
+    def update_list_order(self, item_and_status):
+        for item in item_and_status["item"]:
             total_in = int(item[1])
             name = item[0]
             price_in = int(self.food_id_and_price[(name,item[3])][1])
@@ -264,6 +270,8 @@ class MyApp(QMainWindow):
         self.sale_p.tableView.setWordWrap(True)
         self.sale_p.price_lcd_number.setProperty("intValue", self.price)
         self.recom.price_lcd_number.setProperty("intValue", self.price)
+        if(item_and_status["status"] != None):
+            self.add_status(item_and_status["status"])
 
     def close_popup(self):
         self.set_enabled_salemode_button()
@@ -368,6 +376,7 @@ class MyApp(QMainWindow):
                     c.execute("INSERT INTO DetailOrder (orderID, foodID) VALUES (?,?)", (  order_id,  foodid,) )
         conn.commit()
         self.reset_order()
+        self.add_status(str("add order id : "+ str(order_id) + " to database complete"))
 
     def reset_order(self):
         self.order = {}
@@ -440,6 +449,13 @@ class MyApp(QMainWindow):
 
     def closeEvent(self,event):
         self.recom.close()
+
+    def add_status(self, status):
+        item = QtGui.QStandardItem(status)
+        self.status.insertRow(0, item)
+
+    def reset_status(self):
+        self.status = QtGui.QStandardItemModel()
 
 class MyPopup(QMainWindow):
     def __init__(self, parent=None, myCloseEvent=None):
