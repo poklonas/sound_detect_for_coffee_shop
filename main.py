@@ -153,6 +153,8 @@ class MyApp(QMainWindow):
     def open_select_page_from_sale(self):
         self.reset_order()
         self.reset_status()
+        self.rc.on = False
+        self.sale_p.sound_detect_button.setText("Start order by voice")
         self.open_select_page()
 
     def open_saleinfo_page(self):
@@ -251,6 +253,8 @@ class MyApp(QMainWindow):
             name = item[0]
             price_in = int(self.food_id_and_price[(name,item[3])][1])
             self.price +=  price_in * total_in
+            name += "[" + item[3] + "]"
+            print(self.order)
             if name in self.order:
                 total = int(self.order[name][1]) + int(total_in)
                 self.order.update({name : [name,str(total),str(price_in)]})
@@ -275,7 +279,7 @@ class MyApp(QMainWindow):
 
     def close_popup(self):
         self.set_enabled_salemode_button()
-        self.rc.on = False
+        #self.rc.on = False
         self.popup.close()
 
     def manual_add_popup(self, menu):
@@ -360,6 +364,7 @@ class MyApp(QMainWindow):
             foodname = split_menu[0]
             optional = split_menu[1:]
             foodname = foodname.split('[') # => ['menu', 'M]']
+            print(foodname)
             if(len(foodname) < 2):
                 foodid = self.food_id_and_price[(foodname[0],'N')][0]    
             else:
@@ -400,7 +405,7 @@ class MyApp(QMainWindow):
         self.order_tuple += (self.rule_and_header[2][name],)
         if(self.food_id_and_price[(name,size)] != 0):
             price_in = self.food_id_and_price[(name,size)][1]
-            name += '['+size+'] '
+            name += '['+size+']'
         else:
             price_in = self.food_id_and_price[(name,'N')][1]
         for option in options:

@@ -26,7 +26,7 @@ class CoffeeShopNLP:
         #print(self.normwords)
 
     def text_to_item(self,text):
-        print(text)
+        res = {}
         text=self.replace_word(text)
         words=dict_word_tokenize(text,self.menu_dict)
         new_w=[]
@@ -37,13 +37,18 @@ class CoffeeShopNLP:
                 word=word_tokenize(w)
                 [new_w.append(i) for i in word]
         words = new_w
-        print(words)
+        #print(words)
         items = self.split_item(words)
-        print(items)
+        #print(items)
         item_formated = []
         for item in items:
             item_formated.append(self.to_format(item))
-        return item_formated
+        if (items == []) :
+            res["status"] = "Fail to process word \"{}\".".format(text)
+        else:
+            res["status"] = "Process word \"{}\" complete.".format(text)
+        res["item"] = item_formated
+        return res
         
     def replace_word(self,text):
         for word in self.normwords:
@@ -65,7 +70,8 @@ class CoffeeShopNLP:
         
     def to_format(self,item):
         name = self.lang_convert_th_eng[item[0]]
-        qty,size,type = 1,"Medium","Ice"
+        qty = 1
+        size,type = "M","Ice"
         sugar = None
         optional = []
         neg = 0
@@ -74,7 +80,7 @@ class CoffeeShopNLP:
             if (word in ["ร้อน","เย็น","ปั่น"]) :
                 type = self.lang_convert_th_eng[word]
             elif (word in ["ใหญ่"]) :
-                size = "Large"
+                size = "L"
             elif (word in ["ไม่"]):
                 neg = 1
             elif (word in ["น้ำตาล","หวาน"]):
@@ -85,12 +91,14 @@ class CoffeeShopNLP:
                     sugar = 'Add_Sugar'
                     sweet_state = 1
             elif (word in ["น้อย"]):
-                sugar = 'Low_Sugar'
+                sugar = 'LowSugar'
             elif word.isdigit():
                 qty = word
         if sugar is not None:
             optional.append(sugar)
-        return([type+"_"+name,qty,optional,size])        
+        if name in ["Cookie","Brownies","Cake","Croissant","Hotdog","Toast","Honey-Toast","Hamburger"]:
+            return([name,qty,[],"N"])
+        return([type+"_"+name,qty,optional,size])   
              
         
         
