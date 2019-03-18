@@ -58,6 +58,7 @@ class MyApp(QMainWindow):
         with open('rule.result', 'rb') as file:
             self.rule_and_header = pickle.load(file)
         self.recom = recom_window
+        self.recom.set_parent(self)
 
     def set_drink_to_list(self, typeIn, size):
         conn = sqlite3.connect(self.dbname)
@@ -437,6 +438,8 @@ class MyApp(QMainWindow):
         header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
         header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
 
+    def closeEvent(self,event):
+        self.recom.close()
 
 class MyPopup(QMainWindow):
     def __init__(self, parent=None, myCloseEvent=None):
