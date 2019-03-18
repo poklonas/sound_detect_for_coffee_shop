@@ -130,7 +130,6 @@ class Ui_Form(object):
         font.setPointSize(36)
         self.cancle_button.setFont(font)
         self.cancle_button.setObjectName("cancle_button")
-
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 

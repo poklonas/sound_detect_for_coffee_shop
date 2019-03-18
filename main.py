@@ -270,7 +270,7 @@ class MyApp(QMainWindow):
         self.popup.close()
 
     def manual_add_popup(self, menu):
-        self.popup = MyPopup()
+        self.popup = MyPopup(myCloseEvent = self.set_enabled_salemode_button)
         self.manual_mpop.setupUi(self.popup)
         self.set_disable_salemode_button()
         self.manual_mpop.manuname_label.setText(menu["name"])
@@ -439,8 +439,12 @@ class MyApp(QMainWindow):
 
 
 class MyPopup(QMainWindow):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, myCloseEvent=None):
         super(MyPopup, self).__init__(parent)
+        self.myevent = myCloseEvent
+
+    def closeEvent(self,event):
+        self.myevent() 
 
 class MyOrderTableModel(QAbstractTableModel):
     def __init__(self, dataIn, parent=None, *args):
