@@ -1,5 +1,5 @@
 import associate.fpgrowth as orange_asso
-import Orange as orange
+#import Orange as orange
 #from Orange.data import Domain, DiscreteVariable, ContinuousVariable
 #mport numpy as np
 #import pandas as pd
