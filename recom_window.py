@@ -98,7 +98,7 @@ class Recom_window(QMainWindow):
     def update_pic(self):
         scene = QGraphicsScene()
         path = self.recommend[self.index]
-        scene.addPixmap(QPixmap(path))
+        scene.addPixmap(QPixmap(path).scaled(675, 465))
         self.show_recommend.setScene(scene)
 
     def set_action(self):
