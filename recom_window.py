@@ -91,9 +91,10 @@ class Recom_window(QMainWindow):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def update_recom(self, set_rec):
-        self.recommend = set_rec
-        self.index = 0
-        self.update_pic()
+        if (set_rec != []):
+            self.recommend = set_rec
+            self.index = 0
+            self.update_pic()
 
     def update_pic(self):
         scene = QGraphicsScene()

@@ -16,6 +16,7 @@ from other_module.pjvoice import Recogning
 from thread import * 
 from my_association import update_rule 
 from recom_window import Recom_window 
+from remove_order_popup import Ui_Form as remove_order_pop
 import pickle 
 import collections
 import sqlite3
@@ -31,6 +32,7 @@ class MyApp(QMainWindow):
         self.saleinfo_p = saleinfo_p()
         self.feed_pop = feedback_pop()
         self.manual_mpop = manual_pop()
+        self.rm_order_pop = remove_order_pop()
         self.popup = MyPopup()
         self.open_login_page()
         self.dbname = 'newDB3.db'
@@ -140,6 +142,7 @@ class MyApp(QMainWindow):
 
     def open_sale_page(self):
         self.sale_p.setupUi(self)
+        self.sale_p.tableView.doubleClicked.connect(self.show_comfirm_remove_order)
         self.set_hot_drink()
         self.set_sale_page_action()
         order = {
@@ -161,6 +164,38 @@ class MyApp(QMainWindow):
         self.saleinfo_p.setupUi(self)
         self.set_saleinfo_page_action()
         self.show()
+
+    def show_comfirm_remove_order(self, clickedIndex):
+        row=clickedIndex.row()
+        model=clickedIndex.model()
+        self.popup = MyPopup(myCloseEvent = self.set_enabled_salemode_button)
+        self.rm_order_pop.setupUi(self.popup)
+        order_name = str(model.get_name(row))
+        self.rm_order_pop.label.setText("Remove Order : " + order_name)
+        self.rm_order_pop.labelQty.setText("Qty : " + str(model.get_qty(row)))
+        self.rm_order_pop.noButton.clicked.connect(self.close_popup)
+        self.rm_order_pop.yesButton.clicked.connect(partial(self.remove_order,order_name))
+        self.set_disable_salemode_button()
+        self.popup.show()
+
+    def remove_order(self, name):
+        self.price -= int(self.order[name][2]) * int(self.order[name][1])
+        del self.order[name]
+        order = []
+        for i in self.order.values():
+            order.append(i)
+        if order != []:
+            order_model = MyOrderTableModel(order, self)
+        else:
+            order_model = MyOrderTableModel([[None,None,None]], self)
+        self.sale_p.tableView.setModel(order_model)
+        self.adjust_header()
+        self.sale_p.price_lcd_number.setProperty("intValue", self.price)
+        self.show_recommend()
+        self.recom.order_table.setModel(order_model)
+        self.recom.adjust_header()
+        self.recom.price_lcd_number.setProperty("intValue", self.price)
+        self.close_popup()
 
     def remove_button(self):
         items = self.sale_p.scrollAreaWidgetContents.children()
@@ -311,6 +346,7 @@ class MyApp(QMainWindow):
         self.sale_p.sound_detect_button.setEnabled(False)
         self.sale_p.bill_button.setEnabled(False)
         self.sale_p.back_button.setEnabled(False)
+        self.sale_p.tableView.setEnabled(False)
         items = self.sale_p.scrollAreaWidgetContents.children()
         count = 0
         for i in items:
@@ -325,6 +361,7 @@ class MyApp(QMainWindow):
         self.sale_p.sound_detect_button.setEnabled(True)
         self.sale_p.bill_button.setEnabled(True)
         self.sale_p.back_button.setEnabled(True)
+        self.sale_p.tableView.setEnabled(True)
         items = self.sale_p.scrollAreaWidgetContents.children()
         count = 0
         for i in items:
@@ -364,7 +401,6 @@ class MyApp(QMainWindow):
             foodname = split_menu[0]
             optional = split_menu[1:]
             foodname = foodname.split('[') # => ['menu', 'M]']
-            print(foodname)
             if(len(foodname) < 2):
                 foodid = self.food_id_and_price[(foodname[0],'N')][0]    
             else:
@@ -492,6 +528,11 @@ class MyOrderTableModel(QAbstractTableModel):
             return QVariant()
         return QVariant(self.arraydata[index.row()][index.column()])
 
+    def get_name(self, row):
+        return self.arraydata[row][0]
+
+    def get_qty(self, row):
+        return self.arraydata[row][1]
 
     def headerData(self, col, orientation, role):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:

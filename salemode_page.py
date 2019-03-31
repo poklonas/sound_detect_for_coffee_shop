@@ -87,6 +87,7 @@ class Ui_MainWindow(object):
         self.tableView.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
         self.tableView.setObjectName("tableView")
         self.tableView.resizeColumnsToContents()
+        self.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         ####################################################################################
         self.bill_scroll.setWidget(self.scrollAreaWidgetContents_2)
 
@@ -149,7 +150,6 @@ class Ui_MainWindow(object):
         self.status = QtWidgets.QListView(self.centralwidget)
         self.status.setGeometry(QtCore.QRect(480, 540, 771, 111))
         self.status.setObjectName("status")
-
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -167,4 +167,4 @@ class Ui_MainWindow(object):
         self.bill_button.setText(_translate("MainWindow", "Payment"))
         self.sound_detect_button.setText(_translate("MainWindow", "Start order by voice"))
 
-
+        
