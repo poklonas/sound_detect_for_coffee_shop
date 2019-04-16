@@ -1,19 +1,19 @@
-เอสเปรสโซ่,เอส,Espresso
-คัปปุชชีโน,คาปูชิโน่,คาปูชิโน,คาปู,Cappuccino
-ลาเต้,Latte
-มอคค่า,Mocha
-กาแฟดำผสมน้ำผึ้ง,Honey Black Coffee
-กาแฟดำผสมน้ำผึ้งมะนาว,Honey Black Coffee Lemon
+เอสเปรสโซ่,exo,sso,espresso
+คัปปุชชีโน,คาปูชิโน่,คาปูชิโน,คาปู,ปูชิโน่,ปูชิโน,kapoo,cappuccino
+ลาเต้,latte
+มอคค่า,mocha
+กาแฟดำผสมน้ำผึ้ง,honey black coffee
+กาแฟดำผสมน้ำผึ้งมะนาว,honey black coffee lemon
 ชา,Tea
 ชาเขียวนม,Green Tea with Milk
 ชานม,Milk Tea
 ชามะนาว,Lemonade Tea
 ชาดำ,Black Tea
-ชาเขียวน้ำผึ้ง,มัจฉาฮันนี่,Matcha Honey
-ดาร์คช็อกโกแลต,Dark chocolate
+ชาเขียวน้ำผึ้ง,มัจฉาฮันนี่,มัจฉา Honey,Matcha Honey
+ดาร์คช็อกโกแลต,ดาร์กช็อค,Dark chocolate
 นมสด,Fresh Milk
 ช็อกโกแลต,ช็อคโกแลต,ช้อกโกแลต,Chocolate
-น้ำลิ้นจี่,Lynchee Juice
+น้ำลิ้นจี่,นางลิ้นจี่,Lynchee Juice
 น้ำสตรอเบอร์รี่,สตรอเบอร์รี่,Strawberry juice
 น้ำกีวี่,Kiwi Juice
 คุกกี้,Cookie
@@ -21,6 +21,6 @@
 ขนมเค้ก,Cake
 ครัวซอง,Croissant
 ฮอทดอก,Hotdog
-ขนมปังปิ้ง,Toast
-ฮันนี้โทส,Honey-Toast
+ขนมปังปิ้ง,หนมปังปิ้ง,Toast
+ฮันนี้โทส,ฮันนี่โทส,Honey Toast
 แฮมเบอร์เกอร์,Hamburger
