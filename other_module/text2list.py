@@ -48,11 +48,11 @@ class CoffeeShopNLP:
         items_translated = []
         for item in items:
             i1 = self.translate1(item)
-            i2 = self.translate2(item)
-            if i1 != i2:
-                print(raw_text)
-                print(i1)
-                print(i2)
+            # i2 = self.translate2(item)
+            # if i1 != i2:
+                # print(raw_text)
+                # print(i1)
+                # print(i2)
             items_translated.append(i1)
             #items_translated.append(self.translate2(item))
         if (items == []) :

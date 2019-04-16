@@ -13,6 +13,7 @@ from warning_popup import Ui_Form as warn_pop
 from saleinfo_page import Ui_MainWindow as saleinfo_p
 from functools import partial
 from other_module.pjvoice import Recogning
+from other_module.logging import logging
 from thread import * 
 from my_association import update_rule 
 from recom_window import Recom_window 
@@ -264,7 +265,6 @@ class MyApp(QMainWindow):
 
     def sound_detect_menu(self):
         self.start_detect_sound()
-        print(self.threadpool.activeThreadCount())
 
     def start_detect_sound(self):
         if(not self.rc.on):
