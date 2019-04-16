@@ -264,6 +264,7 @@ class MyApp(QMainWindow):
 
     def sound_detect_menu(self):
         self.start_detect_sound()
+        print(self.threadpool.activeThreadCount())
 
     def start_detect_sound(self):
         if(not self.rc.on):
@@ -275,12 +276,22 @@ class MyApp(QMainWindow):
         
     def detect(self):
         if(not self.rc.on):
-            self.sale_p.sound_detect_button.setText("Stop order by voice")
+            self.sale_p.sound_detect_button.setText("...")
+            self.rc.setupmic()
             self.rc.on = True
+            self.sale_p.sound_detect_button.setText("Stop order by voice")
+            self.add_status("Speech Recognition Enabled")
             return self.rc.listen(self.update_list_order)
         else:
-            self.sale_p.sound_detect_button.setText("Start order by voice")
+            self.sale_p.sound_detect_button.setText("...")
             self.rc.on = False
+            thread = Thread(self.wait_stop_detect_sound)
+            self.threadpool.start(thread)
+    
+    def wait_stop_detect_sound(self):
+        while(self.rc.status): pass
+        self.sale_p.sound_detect_button.setText("Start order by voice")
+        self.add_status("Speech Recognition Disabled")
            
     def update_list_order(self, item_and_status):
         for item in item_and_status["item"]:
