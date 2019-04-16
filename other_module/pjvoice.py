@@ -2,7 +2,10 @@ import speech_recognition as sr
 from pythainlp.tokenize import word_tokenize
 from PyQt5.QtGui import QStandardItemModel
 from .text2list import *
+from .logging import logging
 from thread import *
+
+import time
 
 class Recogning:
     def __init__(self):
@@ -16,9 +19,12 @@ class Recogning:
         self.dic = CoffeeShopNLP()
 
     def reconizing(self,audio):
+        start_time = time.time()
         text = self.r.recognize_google(audio,language = "th-TH")
+        logging.debug("recognize %s (%.2f s)",text,time.time()-start_time)
+        start_time = time.time()
         order = self.dic.text_to_item(text)
-        print("pj", order)
+        logging.debug("order %s complete (%.2f s)",str(order),time.time()-start_time)
         return order
     
     def setupmic(self):
@@ -29,14 +35,15 @@ class Recogning:
         self.order_model = QStandardItemModel()
         while self.on:
             self.status = True
+            start_time = time.time()
             with sr.Microphone() as source:
-                print("listening")
-                audio = self.r.listen(source) 
-                print("listening complete")
+                logging.info("listening")
+                audio = self.r.listen(source) s
+                logging.info("listening complete (%.2f s)",time.time()-start_time)
             thread = Thread(self.reconizing, audio)
             thread.signals.result.connect(self.fc_update)
             self.threadpool.start(thread)
-        print("stop all listening")
+        logging.info("stop all listening")
         self.status = False
         return None
 
