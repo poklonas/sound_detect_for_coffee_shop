@@ -195,7 +195,15 @@ class CoffeeShopNLP:
         if whip_cream is not None:
             optional.append(whip_cream)
         if name in ["Cookie","Brownies","Cake","Croissant","Hotdog","Toast","Honey-Toast","Hamburger"]:
-            return([name,qty,[],"N"])   
+            return([name,qty,[],"N"])  
+        if name in ["Tea"]:
+            type = "Hot"
+        if name in ["Honey_Black_Coffee","Honey_Black_Coffee_Lemon","Lemonade_Tea","Black_Tea","Matcha_Honey"]:
+            type = "Ice"
+        if name in ["Lynchee_Juice","Strawberry_juice","Kiwi_Juice"] and type == "Hot":
+            type = "Ice"
+        if type == "Hot":
+            size = "M"
         return([type+"_"+name,qty,optional,size])        
         
         
