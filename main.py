@@ -276,14 +276,14 @@ class MyApp(QMainWindow):
         
     def detect(self):
         if(not self.rc.on):
-            self.sale_p.sound_detect_button.setText("...")
+            self.sale_p.sound_detect_button.setText("Please Wait...")
             self.rc.setupmic()
             self.rc.on = True
             self.sale_p.sound_detect_button.setText("Stop order by voice")
             self.add_status("Speech Recognition Enabled")
             return self.rc.listen(self.update_list_order)
         else:
-            self.sale_p.sound_detect_button.setText("...")
+            self.sale_p.sound_detect_button.setText("Please Wait...")
             self.rc.on = False
             thread = Thread(self.wait_stop_detect_sound)
             self.threadpool.start(thread)
