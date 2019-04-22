@@ -15,13 +15,14 @@ class CoffeeShopNLP:
             "เย็น" : "Ice",
             "ปั่น" : "Frappe",
         }
+        self.word_filter = ["ร้อน","เย็น","ปั่น","แก้ว","ใหญ่","หวาน","น้ำตาล","นม","นมข้น","วิปครีม","วิป","ไม่","ใส่","น้อย","ปกติ","กลาง","มาก","เยอะ","เพิ่ม"]
         with open("other_module/menu.csv",encoding='utf-8') as csvfile:
             reader = csv.reader(csvfile)
             for row in reader: # each row is a list
                 self.lang_convert_th_eng[row[0]] = row[1]
                 #self.menu.append([row[0],row[1]])
                 self.menus.append(row[0])
-        self.keyword = [item for item in self.menus]
+        self.keyword = [item for item in self.menus if item != "ชา"]
         self.keyword.append("วิป")
         self.keyword.append("วิปครีม")
         self.keyword_dict=dict_trie(self.keyword)
@@ -43,23 +44,21 @@ class CoffeeShopNLP:
                 word=word_tokenize(w)
                 [new_w.append(i) for i in word]
         words = new_w
-        # print(words)
-        items = self.split_item(words)
-        items_translated = []
-        for item in items:
-            i1 = self.translate1(item)
-            # i2 = self.translate2(item)
-            # if i1 != i2:
-                # print(raw_text)
-                # print(i1)
-                # print(i2)
-            items_translated.append(i1)
-            #items_translated.append(self.translate2(item))
-        if (items == []) :
+        items_translated_2 = self.translate2(words)
+        # items = self.split_item(words)
+        # items_translated_1 = []
+        # for item in items:
+        #     item = self.translate1(item)
+        #     items_translated_1.append(item)
+        # if items_translated_2 != items_translated_1:
+        #     print(raw_text)
+        #     print(items_translated_1)
+        #     print(items_translated_2)
+        if (items_translated_2 == []) :
             res["status"] = "fail to processing \"{}\".".format(raw_text)
         else:
             res["status"] = "process word \"{}\" complete.".format(raw_text)
-        res["item"] = items_translated
+        res["item"] = items_translated_2
         return res
         
     def replace_word(self,text):
@@ -82,54 +81,59 @@ class CoffeeShopNLP:
         return res
         
     def translate2(self,item):
+        res = []
+        item = [word for word in item if word in self.word_filter or word in self.menus or word.isdigit()]
         text = "".join(item)
-        text = text.replace("ๆ","")
-        regex = r"(menu)(ร้อน|เย็น|ปั่น)?\s*(แก้วใหญ่)?\s*((ไม่|ไม่ใส่)?(หวาน(น้อย|ปกติ|กลาง|มาก)?|น้ำตาล(เยอะ|น้อย|นิดหน่อย|อ่อน)?)|((ไม่)?(ใส่นมข้น|ใส่นม))|((ไม่)?(เพิ่ม|ใส่)(วิปครีม|วิป)))*(\d+)?"
+        regex = r"(?P<menu>menus)(?P<type>ร้อน|เย็น|ปั่น)?(?P<size>แก้วใหญ่)?((?P<sweetnon>ไม่หวาน|ไม่ใส่น้ำตาล)|(?P<sweet>น้ำตาล|หวาน)(?P<sweetlevel>น้อย|ปกติ|ปานกลาง|กลาง|มาก|เยอะ)?|(?P<milknon>ไม่ใส่นม|ไม่ใส่นมข้น|ไม่นม|ไม่นมข้น)|(?P<milk>ใส่นมข้น|ใส่นม|นมข้น)(?P<milklevel>(น้อย|ปกติ|ปานกลาง|กลาง|มาก|เยอะ)?)|(?P<whipcream>ใส่วิปครีม|ใส่วิป|เพิ่มวิปครีม|เพิ่มวิป)|(?P<qty>\d+))*"
         menu = "|".join(reversed(self.menus))
-        regex = regex.replace("menu",menu)
+        regex = regex.replace("menus",menu)
         matches = re.finditer(regex, text)
-        
-        for matchNum, match in enumerate(matches, start=1):          
-            #print ("Match {matchNum} was found at {start}-{end}: {match}".format(matchNum = matchNum, start = match.start(), end = match.end(), match = match.group()))
-            
-            for groupNum in range(0, len(match.groups())):
-                groupNum = groupNum + 1              
-                # print ("Group {groupNum} found at {start}-{end}: {group}".format(groupNum = groupNum, start = match.start(groupNum), end = match.end(groupNum), group = match.group(groupNum)))
-                
-                name = self.lang_convert_th_eng[match.group(1)]
-                qty = int(match.group(16)) if match.group(16) != None else 1
-                size = "L" if match.group(3) != None else "M"
-                type = self.lang_convert_th_eng[match.group(2)] if match.group(2) != None else "Ice"
-                sugar = None
-                milk = None
-                whip_cream = None
-                optional = []
-                if match.group(6) != None:
-                    if match.group(5) != None:
-                        sugar="No_Sugar"
-                    elif match.group(7) in ["น้อย"] or match.group(8) in ["น้อย","นิดหน่อย","อ่อน"]:
-                        sugar="Low_Sugar"
-                    elif match.group(7) in ["มาก"] or match.group(8) in ["เยอะ"]:
-                        sugar="Extra_Sugar"
-                    elif match.group(6) == "หวาน":
-                        sugar="Extra_Sugar"
-                if match.group(9) != None:
-                    if match.group(10) != None:
-                        milk="No_Milk"
-                    else:   
-                        milk="Extra_Milk"
-                if match.group(12) != None:
-                    if match.group(13) == None:
-                        whip_cream="Extra_Whipped_Cream"
-        if sugar is not None:
-            optional.append(sugar)
-        if milk is not None:
-            optional.append(milk)
-        if whip_cream is not None:
-            optional.append(whip_cream)
-        if name in ["Cookie","Brownies","Cake","Croissant","Hotdog","Toast","Honey-Toast","Hamburger"]:
-            return([name,qty,[],"N"])                 
-        return([type+"_"+name,qty,optional,size]) 
+        for match in matches:
+            name = self.lang_convert_th_eng[match.group("menu")]
+            qty = int(match.group("qty")) if match.group("qty") != None else 1
+            size = "L" if match.group("size") != None else "M"
+            type = self.lang_convert_th_eng[match.group("type")] if match.group("type") != None else "Ice"
+            sugar = None
+            milk = None
+            whip_cream = None
+            optional = []
+            if match.group("sweetnon")!=None:
+                sugar="No_Sugar"
+            elif match.group("sweet")!=None:
+                sugar="Extra_Sugar"
+                if match.group("sweetlevel") in ["น้อย"]:
+                    sugar="Low_Sugar"
+                elif match.group("sweetlevel") in ["ปกติ","ปานกลาง","กลาง"]:
+                    sugar=None
+            if match.group("milknon")!=None:
+                milk="No_Milk"
+            elif match.group("milk")!=None:
+                milk="Extra_Milk"
+                if match.group("milklevel") in ["น้อย"]:
+                    milk="Low_Milk"
+                elif match.group("milklevel") in ["ปกติ","ปานกลาง","กลาง"]:
+                    milk=None   
+            if match.group("whipcream")!=None:
+                whip_cream="Extra_Whipped_Cream"
+            if sugar is not None:
+                optional.append(sugar)
+            if milk is not None:
+                optional.append(milk)
+            if whip_cream is not None:
+                optional.append(whip_cream)
+            if name in ["Tea"]:
+                type = "Hot"
+            if name in ["Honey_Black_Coffee","Honey_Black_Coffee_Lemon","Lemonade_Tea","Black_Tea","Matcha_Honey"]:
+                type = "Ice"
+            if name in ["Lynchee_Juice","Strawberry_juice","Kiwi_Juice"] and type == "Hot":
+                type = "Ice"
+            if type == "Hot":
+                size = "M"
+            if name in ["Cookie","Brownies","Cake","Croissant","Hotdog","Toast","Honey-Toast","Hamburger"]:
+                res.append([name,qty,[],"N"])                 
+            else: 
+                res.append([type+"_"+name,qty,optional,size])
+        return res     
         
     def translate1(self,item):
         name = self.lang_convert_th_eng[item[0]]
