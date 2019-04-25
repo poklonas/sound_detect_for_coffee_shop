@@ -84,7 +84,7 @@ class CoffeeShopNLP:
         res = []
         item = [word for word in item if word in self.word_filter or word in self.menus or word.isdigit()]
         text = "".join(item)
-        regex = r"(?P<menu>menus)(?P<type>ร้อน|เย็น|ปั่น)?(?P<size>แก้วใหญ่)?((?P<sweetnon>ไม่หวาน|ไม่ใส่น้ำตาล)|(?P<sweet>น้ำตาล|หวาน)(?P<sweetlevel>น้อย|ปกติ|ปานกลาง|กลาง|มาก|เยอะ)?|(?P<milknon>ไม่ใส่นม|ไม่ใส่นมข้น|ไม่นม|ไม่นมข้น)|(?P<milk>ใส่นมข้น|ใส่นม|นมข้น)(?P<milklevel>(น้อย|ปกติ|ปานกลาง|กลาง|มาก|เยอะ)?)|(?P<whipcream>ใส่วิปครีม|ใส่วิป|เพิ่มวิปครีม|เพิ่มวิป)|(?P<qty>\d+))*"
+        regex = r"(?P<menu>menus)((?P<type>ร้อน|เย็น|ปั่น)|(?P<size>แก้วใหญ่)|(?P<sweetnon>ไม่หวาน|ไม่ใส่น้ำตาล)|(?P<sweet>น้ำตาล|หวาน)(?P<sweetlevel>น้อย|ปกติ|ปานกลาง|กลาง|มาก|เยอะ)?|(?P<milknon>ไม่ใส่นม|ไม่ใส่นมข้น|ไม่นม|ไม่นมข้น)|(?P<milk>ใส่นมข้น|ใส่นม|นมข้น)(?P<milklevel>(น้อย|ปกติ|ปานกลาง|กลาง|มาก|เยอะ)?)|(?P<whipcreamnon>ไม่วิป|ไม่วิปครีม)|(?P<whipcream>ใส่วิปครีม|ใส่วิป|เพิ่มวิปครีม|เพิ่มวิป)|(?P<qty>\d+))*"
         menu = "|".join(reversed(self.menus))
         regex = regex.replace("menus",menu)
         matches = re.finditer(regex, text)
