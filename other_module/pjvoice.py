@@ -38,7 +38,7 @@ class Recogning:
             start_time = time.time()
             with sr.Microphone() as source:
                 logging.info("listening")
-                audio = self.r.listen(source) s
+                audio = self.r.listen(source)
                 logging.info("listening complete (%.2f s)",time.time()-start_time)
             thread = Thread(self.reconizing, audio)
             thread.signals.result.connect(self.fc_update)
