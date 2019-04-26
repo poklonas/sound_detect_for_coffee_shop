@@ -294,13 +294,16 @@ class MyApp(QMainWindow):
         self.add_status("Speech Recognition Disabled")
            
     def update_list_order(self, item_and_status):
+        print(item_and_status)
         for item in item_and_status["item"]:
             total_in = int(item[1])
             name = item[0]
             price_in = int(self.food_id_and_price[(name,item[3])][1])
             self.price +=  price_in * total_in
             name += "[" + item[3] + "]"
-            print(self.order)
+            for option in item[2]:
+                if option != 'Normal':
+                    name += '.' + option
             if name in self.order:
                 total = int(self.order[name][1]) + int(total_in)
                 self.order.update({name : [name,str(total),str(price_in)]})
