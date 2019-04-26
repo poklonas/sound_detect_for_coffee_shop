@@ -28,7 +28,7 @@ class Recogning:
         return order
     
     def setupmic(self):
-        with sr.Microphone() as source: self.r.adjust_for_ambient_noise(source,1)
+        with sr.Microphone() as source: self.r.adjust_for_ambient_noise(source)
 
     def listen(self, fc_update):
         self.fc_update = fc_update
@@ -38,7 +38,8 @@ class Recogning:
             start_time = time.time()
             with sr.Microphone() as source:
                 logging.info("listening")
-                audio = self.r.listen(source) s
+                # audio = self.r.listen(source,phrase_time_limit=10)
+                audio = self.r.listen(source)
                 logging.info("listening complete (%.2f s)",time.time()-start_time)
             thread = Thread(self.reconizing, audio)
             thread.signals.result.connect(self.fc_update)
