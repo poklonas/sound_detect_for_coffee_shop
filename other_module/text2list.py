@@ -25,6 +25,7 @@ class CoffeeShopNLP:
         self.keyword = [item for item in self.menus if item != "ชา"]
         self.keyword.append("วิป")
         self.keyword.append("วิปครีม")
+        self.keyword.append("ร้อน")
         self.keyword_dict=dict_trie(self.keyword)
         with open("other_module/normwords.csv",encoding='utf-8') as csvfile:
             reader = csv.reader(csvfile)
@@ -44,6 +45,7 @@ class CoffeeShopNLP:
                 word=word_tokenize(w)
                 [new_w.append(i) for i in word]
         words = new_w
+        print(words)
         items_translated_2 = self.translate2(words)
         # items = self.split_item(words)
         # items_translated_1 = []
@@ -64,7 +66,7 @@ class CoffeeShopNLP:
     def replace_word(self,text):
         for word in self.normwords:
             for w in word[1:]:
-                w.lower()
+                # w.lower()
                 text=text.replace(w, word[0])
         return(text)
         
@@ -84,7 +86,7 @@ class CoffeeShopNLP:
         res = []
         item = [word for word in item if word in self.word_filter or word in self.menus or word.isdigit()]
         text = "".join(item)
-        regex = r"(?P<menu>menus)((?P<type>ร้อน|เย็น|ปั่น)|(?P<size>แก้วใหญ่)|(?P<sweetnon>ไม่หวาน|ไม่ใส่น้ำตาล)|(?P<sweet>น้ำตาล|หวาน)(?P<sweetlevel>น้อย|ปกติ|ปานกลาง|กลาง|มาก|เยอะ)?|(?P<milknon>ไม่ใส่นม|ไม่ใส่นมข้น|ไม่นม|ไม่นมข้น)|(?P<milk>ใส่นมข้น|ใส่นม|นมข้น)(?P<milklevel>(น้อย|ปกติ|ปานกลาง|กลาง|มาก|เยอะ)?)|(?P<whipcreamnon>ไม่วิป|ไม่วิปครีม)|(?P<whipcream>ใส่วิปครีม|ใส่วิป|เพิ่มวิปครีม|เพิ่มวิป)|(?P<qty>\d+))*"
+        regex = r"(?P<menu>menus)((?P<type>ร้อน|เย็น|ปั่น)|(?P<size>แก้วใหญ่)|(?P<sweetnon>ไม่หวาน|ไม่ใส่น้ำตาล)|(?P<sweet>น้ำตาล|หวาน)(?P<sweetlevel>น้อย|ปกติ|ปานกลาง|กลาง|มาก|เยอะ)?|(?P<milknon>ไม่ใส่นม|ไม่ใส่นมข้น|ไม่นม|ไม่นมข้น)|(?P<milk>ใส่นมข้น|ใส่นม|นมข้น)(?P<milklevel>(น้อย|ปกติ|ปานกลาง|กลาง|มาก|เยอะ)?)|(?P<whipcreamnon>ไม่วิป|ไม่วิปครีม)|(?P<whipcream>ใส่วิปครีม|ใส่วิป|เพิ่มวิปครีม|เพิ่มวิป)|.*?(?P<qty>\d+))*"
         menu = "|".join(reversed(self.menus))
         regex = regex.replace("menus",menu)
         matches = re.finditer(regex, text)
@@ -129,7 +131,7 @@ class CoffeeShopNLP:
                 type = "Ice"
             if type == "Hot":
                 size = "M"
-            if name in ["Cookie","Brownies","Cake","Croissant","Hotdog","Toast","Honey-Toast","Hamburger"]:
+            if name in ["Cookie","Brownies","Cake","Croissant","hotdog","Toast","honey-toast","hamburger"]:
                 res.append([name,qty,[],"N"])                 
             else: 
                 res.append([type+"_"+name,qty,optional,size])
@@ -198,7 +200,7 @@ class CoffeeShopNLP:
             optional.append(milk)
         if whip_cream is not None:
             optional.append(whip_cream)
-        if name in ["Cookie","Brownies","Cake","Croissant","Hotdog","Toast","Honey-Toast","Hamburger"]:
+        if name in ["Cookie","Brownies","Cake","Croissant","hotdog","Toast","honey-toast","hamburger"]:
             return([name,qty,[],"N"])  
         if name in ["Tea"]:
             type = "Hot"
