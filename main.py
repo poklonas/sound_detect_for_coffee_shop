@@ -483,9 +483,13 @@ class MyApp(QMainWindow):
         
     def show_recommend(self):
         order_in = frozenset(self.order_tuple)
+        invert_order_in = ()
+        for j in self.order_tuple:
+            invert_order_in += (j-29,)
+        invert_order_in = frozenset(invert_order_in)
         show_set = ()
         for i in self.rule_and_header[0]:
-            if(order_in == i[0]):
+            if(order_in == i[0] or invert_order_in == i[0]):
                 for j in i[1]:
                     show_set += (self.rule_and_header[1][j],)
         if(show_set == ()):
