@@ -170,7 +170,7 @@ class Ui_MainWindow(object):
         #item.setText(_translate("MainWindow", "Qty"))
         item = self.tableWidget.horizontalHeaderItem(3)
         item.setText(_translate("MainWindow", "Items"))
-        self.label_3.setText(_translate("MainWindow", "Count Cup Size"))
+        self.label_3.setText(_translate("MainWindow", "Count"))
         self.cup_m_count.setText(_translate("MainWindow", "M : "))
         self.cup_l_count.setText(_translate("MainWindow", "L : "))
         self.cup_total_count.setText(_translate("MainWindow", "Total : "))
@@ -178,8 +178,8 @@ class Ui_MainWindow(object):
         self.price_m_count.setText(_translate("MainWindow", "M : "))
         self.price_l_count.setText(_translate("MainWindow", "L : "))
         self.price_total_count.setText(_translate("MainWindow", "Total : "))
-        self.price_n_count.setText(_translate("MainWindow", "other : "))
-        self.cup_n_count.setText(_translate("MainWindow", "Other : "))
+        self.price_n_count.setText(_translate("MainWindow", "Snack : "))
+        self.cup_n_count.setText(_translate("MainWindow", "Snack : "))
 
     def update_table(self, path, dic_menu):
         conn = sqlite3.connect(path)
@@ -297,8 +297,8 @@ class Ui_MainWindow(object):
         self.price_m_count.setText(_translate("MainWindow", "M : " + str(price_m)))
         self.price_l_count.setText(_translate("MainWindow", "L : " + str(price_l)))
         self.price_total_count.setText(_translate("MainWindow", "Total : " + str(price_l + price_m + price_n)))
-        self.price_n_count.setText(_translate("MainWindow", "other : "+ str(price_n)))
-        self.cup_n_count.setText(_translate("MainWindow", "Other : "+ str(size_n)))
+        self.price_n_count.setText(_translate("MainWindow", "Snack : "+ str(price_n)))
+        self.cup_n_count.setText(_translate("MainWindow", "Snack : "+ str(size_n)))
 
     def startDateClicked(self):
         if(self.startDate.selectedDate() > self.stopDate.selectedDate()):
