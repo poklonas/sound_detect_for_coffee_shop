@@ -15,6 +15,7 @@ import collections
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
+        self.setWindowTitle('CoffeeNLP')
         MainWindow.resize(1279, 680)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")

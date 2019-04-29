@@ -14,6 +14,7 @@ class Recom_window(QMainWindow):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         self.setupUi(self)
+        self.setWindowTitle('Recommend')
         self.recommend = ['./image/hot/Hot_Latte.GIF','./image/hot/Hot_Cappuccino.GIF']
         self.index = 0
         self.set_action()
